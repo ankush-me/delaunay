@@ -41,7 +41,7 @@ int main (int argc, char* argv[]) {
 	polys->setDefaultColor(0.6,0.3,0,0.7);
 	polys->addPolygon(verts);
 
-	draws a sequence of lines connecting a pt to its successor
+	//draws a sequence of lines connecting a pt to its successor
 	util::drawPoly(verts, Vector3f(1,0,0), 1, s.env);
 
 	s.run();
