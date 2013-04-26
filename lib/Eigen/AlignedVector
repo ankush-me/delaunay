@@ -1,0 +1,23 @@
+/** Defines aligned std::vector types for fixed-size eigen stuff.
+ *  Read: http://eigen.tuxfamily.org/dox/TopicStlContainers.html  */
+
+#ifndef __ALIGNEDVECTOR__
+#define __ALIGNEDVECTOR__
+
+#include <vector>
+#include <Eigen/StdVector>
+#include <Eigen/Dense>
+
+/** allocator for points. Vector{3,X}f don't need aligned allocators.*/
+typedef  Eigen::aligned_allocator<Eigen::Vector2f>   allocator2f;
+typedef  std::allocator<Eigen::Vector3f>             allocator3f;
+typedef  Eigen::aligned_allocator<Eigen::Vector4f>   allocator4f;
+typedef  std::allocator<Eigen::VectorXf>             allocatorXf;
+
+/** aligned vector types. */
+typedef  std::vector<Eigen::Vector2f, allocator2f> vector2;
+typedef  std::vector<Eigen::Vector3f, allocator3f> vector3;
+typedef  std::vector<Eigen::Vector4f, allocator4f> vector4;
+typedef  std::vector<Eigen::VectorXf, allocatorXf> vectorX;
+
+#endif /* __ALIGNEDVECTOR__ */
