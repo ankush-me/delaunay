@@ -25,8 +25,9 @@ private:
 	// the index of this edge in QuadEdge's list of 4 edges; \in {0,1,2,3}
 	const int idx;
 
-	// origin and destination of the edge
-	Vector2d::Ptr org, dst;
+	/** Origin of the edge.
+	 * 	Destination is stored in the symmetric edge.*/
+	Vector2d::Ptr org;
 
 	// generic data container
 	Data::Ptr     data;
@@ -42,8 +43,9 @@ public:
 	// the index of this edge in QuadEdge's list of 4 edges; \in {0,1,2,3}
 	Edge(int _idx) : idx(_idx) {}
 
-	void setOrigin(Vector2d::Ptr pt);
-	void setDest(Vector2d::Ptr pt);
+	/** Return the quad-edge this edge is a part of.*/
+	QuadEdge::Ptr QEdge();
+
 
 	/** This is a topological operator which joins/ separates the
 	 *  vertex/ face chains defined at edges e1 and e2.
@@ -51,6 +53,14 @@ public:
 	 *
 	 *  Note: Since there is no "flip", the code is especially simple.*/
 	static void Splice(Edge::Ptr e1, Edge::Ptr e2);
+
+
+	/** Operations on the origin/ destination of this edge.*/
+	Vector2d::Ptr Org();
+	Vector2d::Ptr Dest();
+	void setOrg(Vector2d::Ptr pt);
+	void setDest(Vector2d::Ptr pt);
+
 
 	/** These are some functions which help access the
 	 * topological structure of the subdivision.

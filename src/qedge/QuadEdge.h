@@ -22,6 +22,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <vector>
+#include "Data.h"
 
 class Edge;
 
@@ -32,9 +33,11 @@ public:
 
 	QuadEdge();
 
-	/** This is just an alias for the constructor of QuadEdge.
-	 *  Added due to its use in the G&S paper. */
-	static QuadEdge::Ptr MakeEdge();
+	/** Makes a new quad-edge. LOOP is a flag which signifies
+	 *  if we need an edge which forms a loop in the primal space.
+	 *
+	 *  It returns a pointer to the first primal edge. */
+	static Edge::Ptr MakeEdge(bool loop = false);
 };
 
 #endif //__QUADEDGE_H__

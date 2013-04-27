@@ -10,11 +10,6 @@
 #include "utils/misc.h"
 
 
-/** Set the end-points of the edge. */
-void Edge::setOrigin(Vector2d::Ptr pt) {org = pt;}
-void Edge::setDest(Vector2d::Ptr pt) {dst = pt;}
-
-
 /** This is a topological operator which joins/ separates the
  *  vertex/ face chains defined at edges e1 and e2.
  *  Code based on G&S [pg. 98, pg. 102].
@@ -27,6 +22,24 @@ static void Edge::Splice(Edge::Ptr e1, Edge::Ptr e2) {
 	e1->next.swap(e2->next);
 	alpha->next.swap(beta->next);
 }
+
+
+/** Return the origin/ destination of this edge.*/
+Vector2d::Ptr Edge::Org() {
+	return org;
+}
+Vector2d::Ptr Edge::Dest() {
+	return Sym()->Org();
+}
+/** Set the origin/ destination of this edge.*/
+void Edge::setOrg(Vector2d::Ptr pt) {
+	org = pt;
+}
+void Edge::setDest(Vector2d::Ptr pt) {
+	Sym()->setOrg(pt);
+}
+
+
 
 /**These are some functions which help access the
  * topological structure of the subdivision.
