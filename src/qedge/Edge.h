@@ -64,37 +64,37 @@ public:
 	 * topological structure of the subdivision.
 	 * The definitions are taken from pg. 84 of the Guibas & Stolfi Paper. */
 
-	// Return oppositely directed edge. Same orientation.
+	/** Return oppositely directed edge. Same orientation.*/
 	Edge::Ptr Sym();
 
-	// Return the (pseudo) dual edge: e rotated 90 degrees CCW.
+	/* Return the (pseudo) dual edge: e rotated 90 degrees CCW.*/
 	Edge::Ptr Rot();
 
-	// Return the (pseudo) dual edge: e rotated 90 degrees CW.
+	/* Return the (pseudo) dual edge: e rotated 90 degrees CW.*/
 	Edge::Ptr RotInv();
 
-	// Return the ccw next edge about the origin, pointing away from origin.
+	/* Return the ccw next edge about the origin, pointing away from origin.*/
 	Edge::Ptr Onext();
 
-	// Return the ccw next edge about the destination, pointing towards destination.
+	/* Return the ccw next edge about the destination, pointing towards destination.*/
 	Edge::Ptr Dnext();
 
-	// Return the ccw next edge about the left-face.
+	/* Return the ccw next edge about the left-face.*/
 	Edge::Ptr Lnext();
 
-	// Return the ccw next edge about the right-face.
+	/* Return the ccw next edge about the right-face.*/
 	Edge::Ptr Rnext();
 
-	// Return the cw next edge about the origin, pointing away from origin.
+	/* Return the cw next edge about the origin, pointing away from origin.*/
 	Edge::Ptr Oprev();
 
-	// Return the cw next edge about the destination, pointing towards destination.
+	/* Return the cw next edge about the destination, pointing towards destination.*/
 	Edge::Ptr Dprev();
 
-	// Return the cw next edge about the left-face.
+	/* Return the cw next edge about the left-face.*/
 	Edge::Ptr Lprev();
 
-	// Return the cw next edge about the right-face.
+	/* Return the cw next edge about the right-face.*/
 	Edge::Ptr Rprev();
 };
 

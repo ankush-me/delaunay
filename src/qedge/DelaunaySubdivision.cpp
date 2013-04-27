@@ -33,7 +33,6 @@ void DelaunaySubdivision::deleteEdge(Edge::Ptr e) {
 	qedges.erase(e);
 }
 
-
 /** Flips the diagonal of the quadrilateral containing e. From G&S [pg. 104]. */
 void DelaunaySubdivision::swap(Edge::Ptr e) {
 	Edge::Ptr a = e->Oprev();
