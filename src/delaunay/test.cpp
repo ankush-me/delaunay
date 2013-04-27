@@ -32,13 +32,12 @@ void getArguments(int, char**);
 void InsertPoints(Subdivision&);
 
 char *program;
-int num = 20;
-
-
+int num = 1000;
 
 static void usage() {
 	cout<< "usage: "<< program << " [ -n number_of_points ]\n";
 }
+
 
 void getArguments(int argc, char** argv) {
 	program = argv[0];
@@ -68,6 +67,7 @@ void InsertPoints(Subdivision& mesh)
 	for (int i = 0; i < num; i++) {
 		double u = drand48();
 		double v = drand48();
+		cout << "inserting : ["<<u<<", "<<v<<"]"<<endl;
 		mesh.InsertSite(Point2d(u,v));
 	}
 }
