@@ -1,6 +1,8 @@
 #include <Eigen/AlignedVector>
 #include <boost/shared_ptr.hpp>
 #include <vector>
+#include <limits>
+
 
 using namespace Eigen;
 using namespace std;
@@ -86,6 +88,13 @@ int main (int argc, char* argv[]) {
 
 	S temp(1);
 	cout << "Return : "<<S::ret(temp)<<endl;
+
+	float inf = numeric_limits<float>::infinity();
+	float Ninf = numeric_limits<float>::infinity();
+
+	cout << "inf : "<<inf<<endl;
+	cout << "n inf : "<<Ninf<<endl;
+	cout << "inf/Ninf : "<<(inf/Ninf)<<endl;
 
 
 	return 0;

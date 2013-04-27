@@ -10,24 +10,29 @@
 #include "utils/misc.h"
 
 
+/** Set the end-points of the edge. */
+void Edge::setOrigin(Vector2d::Ptr pt) {org = pt;}
+void Edge::setDest(Vector2d::Ptr pt) {dst = pt;}
+
 
 /** This is a topological operator which joins/ separates the
  *  vertex/ face chains defined at edges e1 and e2.
- *  Code based on G&S [pg. 102]. */
+ *  Code based on G&S [pg. 98, pg. 102].
+ *
+ *  Note: Since there is no "flip", the code is especially simple.*/
 static void Edge::Splice(Edge::Ptr e1, Edge::Ptr e2) {
-  Edge::Ptr alpha = e1->Onext()->Rot();
-  Edge::Ptr beta  = e2->Onext()->Rot();
+	Edge::Ptr alpha = e1->Onext()->Rot();
+	Edge::Ptr beta  = e2->Onext()->Rot();
 
-  e1->next.swap(e2->next);
-  alpha->next.swap(beta->next);
+	e1->next.swap(e2->next);
+	alpha->next.swap(beta->next);
 }
 
-
-/** These are some functions which help access the
+/**These are some functions which help access the
  * topological structure of the subdivision.
- * The definitions are taken from pg. 84 of the Guibas & Stolfi Paper. */
+ * The definitions are taken from G&S [pg. 84]. */
 
-/** Return oppositely directed edge. Same orientation.*/
+/** Return oppositely directed edge. [Same orientation]*/
 Edge::Ptr Edge::Sym() {
 	return Rot()->Rot();
 }
@@ -69,7 +74,7 @@ Edge::Ptr Edge::Oprev() {
 
 /** Return the cw next edge about the destination, pointing towards destination. */
 Edge::Ptr Edge::Dprev() {
- return RotInv()->Onext()->RotInv();
+	return RotInv()->Onext()->RotInv();
 }
 
 /** Return the cw next edge about the left-face. */

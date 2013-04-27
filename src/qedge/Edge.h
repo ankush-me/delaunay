@@ -42,9 +42,14 @@ public:
 	// the index of this edge in QuadEdge's list of 4 edges; \in {0,1,2,3}
 	Edge(int _idx) : idx(_idx) {}
 
+	void setOrigin(Vector2d::Ptr pt);
+	void setDest(Vector2d::Ptr pt);
+
 	/** This is a topological operator which joins/ separates the
 	 *  vertex/ face chains defined at edges e1 and e2.
-	 *  Code based on G&S [pg. 102]. */
+	 *  Code based on G&S [pg. 98, pg. 102].
+	 *
+	 *  Note: Since there is no "flip", the code is especially simple.*/
 	static void Splice(Edge::Ptr e1, Edge::Ptr e2);
 
 	/** These are some functions which help access the

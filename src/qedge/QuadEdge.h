@@ -30,8 +30,10 @@ public:
 	typedef	 boost::shared_ptr<QuadEdge> Ptr;
 	std::vector<boost::shared_ptr<Edge> > edges;
 
+	QuadEdge();
 
-	/** Makes a new QuadEdge and returns a pointer to it.*/
+	/** This is just an alias for the constructor of QuadEdge.
+	 *  Added due to its use in the G&S paper. */
 	static QuadEdge::Ptr MakeEdge();
 };
 
