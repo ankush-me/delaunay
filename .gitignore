@@ -14,3 +14,6 @@
 
 #build files
 build/*
+
+#temp files
+*~
