@@ -45,17 +45,41 @@ public:
 	/** Splice e1 and e2.*/
 	static void Splice(Edge::Ptr e1, Edge::Ptr e2);
 
-	// topological accessors
+	/** These are some functions which help access the
+	 * topological structure of the subdivision.
+	 * The definitions are taken from pg. 84 of the Guibas & Stolfi Paper. */
+
+	/** Return oppositely directed edge. Same orientation.*/
+	Edge::Ptr Sym();
+
+	/** Return the (pseudo) dual edge: e rotated 90 degrees CCW.*/
 	Edge::Ptr Rot();
 
+	/** Return the (pseudo) dual edge: e rotated 90 degrees CW.*/
+	Edge::Ptr RotInv();
+
+	/** Return the ccw next edge about the origin, pointing away from origin. */
 	Edge::Ptr Onext();
+
+	/** Return the ccw next edge about the destination, pointing towards destination. */
 	Edge::Ptr Dnext();
+
+	/** Return the ccw next edge about the left-face. */
 	Edge::Ptr Lnext();
+
+	/** Return the ccw next edge about the right-face. */
 	Edge::Ptr Rnext();
 
+	/** Return the cw next edge about the origin, pointing away from origin. */
 	Edge::Ptr Oprev();
+
+	/** Return the cw next edge about the destination, pointing towards destination. */
 	Edge::Ptr Dprev();
+
+	/** Return the cw next edge about the left-face. */
 	Edge::Ptr Lprev();
+
+	/** Return the cw next edge about the right-face. */
 	Edge::Ptr Rprev();
 };
 

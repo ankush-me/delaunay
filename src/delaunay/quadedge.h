@@ -5,7 +5,7 @@
 
 class QuadEdge;
 
-class EdgeW {
+class EdgeQ {
 	friend class QuadEdge;
 	friend void Splice(Edge*, Edge*);
 	public:
