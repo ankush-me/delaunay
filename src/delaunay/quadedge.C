@@ -207,15 +207,15 @@ void Subdivision::InsertSite(const Point2d& x)
 
 /*****************************************************************************/
 
-#include <gl.h>
+#include <GL/gl.h>
 static unsigned int timestamp = 0;
 
-void Subdivision::Draw()
-{
+void Subdivision::Draw() {
 	if (++timestamp == 0)
 		timestamp = 1;
 	startingEdge->Draw(timestamp);
 }
+
 
 void Edge::Draw(unsigned int stamp)
 // This is a recursive drawing routine that uses time stamps to
@@ -231,10 +231,14 @@ void Edge::Draw(unsigned int stamp)
 		// Draw the edge
 		Point2d a = Org2d();
 		Point2d b = Dest2d();
-		bgnline();
-		v2d((double*)&a);
-		v2d((double*)&b);
-		endline();
+
+		// insert openGL drawing function here.
+		glLineWidth(2.5);
+		glColor3f(1.0, 0.0, 0.0);
+		glBegin(GL_LINES);
+		glVertex3f(a.x, a.y, 0.0);
+		glVertex3f(b.x, b.y, 0);
+		glEnd();
 
 		// visit neighbors
 		Onext()->Draw(stamp);
