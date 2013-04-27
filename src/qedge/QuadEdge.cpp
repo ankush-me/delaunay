@@ -2,14 +2,18 @@
 
 QuadEdge::QuadEdge() : edges(4) {}
 
+
 /** Makes a new quad-edge.
  *  It returns a pointer to the first primal edge. */
-static Edge::Ptr QuadEdge::MakeEdge(bool loop) {
+static Edge::Ptr QuadEdge::makeEdge(bool loop) {
+
 	QuadEdge::Ptr qedge(new QuadEdge);
+
 	for (int i=0; i < 4; i++) {
 		Edge::Ptr e(new Edge(i));
 		qedge->edges[i] = e;
 	}
+
 	/** Connect the internal four edges (G&S [pg. 96])
 	 *
 	 *   - In the primal space, a new edge is added (no loop)

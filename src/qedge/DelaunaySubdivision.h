@@ -35,12 +35,14 @@ public:
 
 	/** Adds a new edge connecting the destination of e1 to the origin of e2.
 	 *  Returns the first primal edge of the newly added quad-edge.*/
-	Edge::Ptr Connect(Edge::Ptr e1, Edge::Ptr e2);
+	Edge::Ptr connect(Edge::Ptr e1, Edge::Ptr e2);
 
-	/** Removes the edge E from the subdivision. */
-	void DeleteEdge(Edge::Ptr e);
+	/** Removes the edge E from the subdivision. From G&S [pg. 103]. */
+	void deleteEdge(Edge::Ptr e);
+
+	/** Flips the diagonal of the quadrilateral containing e. From G&S [pg. 104]. */
+	void swap(Edge::Ptr e);
 
 };
-
 
 #endif

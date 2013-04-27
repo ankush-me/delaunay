@@ -27,7 +27,7 @@ private:
 
 	/** Origin of the edge.
 	 * 	Destination is stored in the symmetric edge.*/
-	Vector2d::Ptr org;
+	Vector2d::Ptr origin;
 
 	// generic data container
 	Data::Ptr     data;
@@ -44,22 +44,20 @@ public:
 	Edge(int _idx) : idx(_idx) {}
 
 	/** Return the quad-edge this edge is a part of.*/
-	QuadEdge::Ptr QEdge();
+	QuadEdge::Ptr qEdge();
 
+	/** Operations on the origin/ destination of this edge.*/
+	Vector2d::Ptr org();
+	Vector2d::Ptr dest();
+	void setOrg(Vector2d::Ptr pt);
+	void setDest(Vector2d::Ptr pt);
 
 	/** This is a topological operator which joins/ separates the
 	 *  vertex/ face chains defined at edges e1 and e2.
 	 *  Code based on G&S [pg. 98, pg. 102].
 	 *
 	 *  Note: Since there is no "flip", the code is especially simple.*/
-	static void Splice(Edge::Ptr e1, Edge::Ptr e2);
-
-
-	/** Operations on the origin/ destination of this edge.*/
-	Vector2d::Ptr Org();
-	Vector2d::Ptr Dest();
-	void setOrg(Vector2d::Ptr pt);
-	void setDest(Vector2d::Ptr pt);
+	static void splice(Edge::Ptr e1, Edge::Ptr e2);
 
 
 	/** These are some functions which help access the

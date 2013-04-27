@@ -10,25 +10,14 @@
 #include "utils/misc.h"
 
 
-/** This is a topological operator which joins/ separates the
- *  vertex/ face chains defined at edges e1 and e2.
- *  Code based on G&S [pg. 98, pg. 102].
- *
- *  Note: Since there is no "flip", the code is especially simple.*/
-static void Edge::Splice(Edge::Ptr e1, Edge::Ptr e2) {
-	Edge::Ptr alpha = e1->Onext()->Rot();
-	Edge::Ptr beta  = e2->Onext()->Rot();
-
-	e1->next.swap(e2->next);
-	alpha->next.swap(beta->next);
-}
-
+/** Return the quad-edge this edge is a part of.*/
+QuadEdge::Ptr Edge::qEdge() {return qedge;}
 
 /** Return the origin/ destination of this edge.*/
-Vector2d::Ptr Edge::Org() {
-	return org;
+Vector2d::Ptr Edge::org() {
+	return origin;
 }
-Vector2d::Ptr Edge::Dest() {
+Vector2d::Ptr Edge::dest() {
 	return Sym()->Org();
 }
 /** Set the origin/ destination of this edge.*/
@@ -39,6 +28,18 @@ void Edge::setDest(Vector2d::Ptr pt) {
 	Sym()->setOrg(pt);
 }
 
+/** This is a topological operator which joins/ separates the
+ *  vertex/ face chains defined at edges e1 and e2.
+ *  Code based on G&S [pg. 98, pg. 102].
+ *
+ *  Note: Since there is no "flip", the code is especially simple.*/
+static void Edge::splice(Edge::Ptr e1, Edge::Ptr e2) {
+	Edge::Ptr alpha = e1->Onext()->Rot();
+	Edge::Ptr beta  = e2->Onext()->Rot();
+
+	e1->next.swap(e2->next);
+	alpha->next.swap(beta->next);
+}
 
 
 /**These are some functions which help access the
