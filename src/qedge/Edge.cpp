@@ -1,12 +1,27 @@
-/**
+/***************************
  * Author: Ankush Gupta
  * Date  : 26 April 2013
  *
- * See the doc in QuadEdge.h */
+ * See the doc in QuadEdge.h
+ * *************************/
 
 #include "QuadEdge.h"
 #include "Edge.h"
 #include "utils/misc.h"
+
+
+
+/** This is a topological operator which joins/ separates the
+ *  vertex/ face chains defined at edges e1 and e2.
+ *  Code based on G&S [pg. 102]. */
+static void Edge::Splice(Edge::Ptr e1, Edge::Ptr e2) {
+  Edge::Ptr alpha = e1->Onext()->Rot();
+  Edge::Ptr beta  = e2->Onext()->Rot();
+
+  e1->next.swap(e2->next);
+  alpha->next.swap(beta->next);
+}
+
 
 /** These are some functions which help access the
  * topological structure of the subdivision.
@@ -66,4 +81,3 @@ Edge::Ptr Edge::Lprev() {
 Edge::Ptr Edge::Rprev() {
 	return Sym()->Onext();
 }
-

@@ -59,8 +59,18 @@ class Edge {
 	}
 };
 
+class S {
+private:
+	int val;
+public:
+	S(int v) : val(v) {}
+	static int ret(S o) {return o.val;}
+};
 
+};
 int main (int argc, char* argv[]) {
+	using namespace Test;
+
 	Data::Ptr       i(new IntData(1));
 	Data::Ptr       v(new Vector2Data(Vector2f(1,2))  );
 
@@ -74,6 +84,10 @@ int main (int argc, char* argv[]) {
 	for(int i=0; i < qe->edges.size(); i++)
 		qe->edges[i]->print();
 
+	S temp(1);
+	cout << "Return : "<<S::ret(temp)<<endl;
+
+
 	return 0;
+
 }
-};

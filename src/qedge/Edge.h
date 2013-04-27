@@ -39,47 +39,49 @@ private:
 
 public:
 
-
+	// the index of this edge in QuadEdge's list of 4 edges; \in {0,1,2,3}
 	Edge(int _idx) : idx(_idx) {}
 
-	/** Splice e1 and e2.*/
+	/** This is a topological operator which joins/ separates the
+	 *  vertex/ face chains defined at edges e1 and e2.
+	 *  Code based on G&S [pg. 102]. */
 	static void Splice(Edge::Ptr e1, Edge::Ptr e2);
 
 	/** These are some functions which help access the
 	 * topological structure of the subdivision.
 	 * The definitions are taken from pg. 84 of the Guibas & Stolfi Paper. */
 
-	/** Return oppositely directed edge. Same orientation.*/
+	// Return oppositely directed edge. Same orientation.
 	Edge::Ptr Sym();
 
-	/** Return the (pseudo) dual edge: e rotated 90 degrees CCW.*/
+	// Return the (pseudo) dual edge: e rotated 90 degrees CCW.
 	Edge::Ptr Rot();
 
-	/** Return the (pseudo) dual edge: e rotated 90 degrees CW.*/
+	// Return the (pseudo) dual edge: e rotated 90 degrees CW.
 	Edge::Ptr RotInv();
 
-	/** Return the ccw next edge about the origin, pointing away from origin. */
+	// Return the ccw next edge about the origin, pointing away from origin.
 	Edge::Ptr Onext();
 
-	/** Return the ccw next edge about the destination, pointing towards destination. */
+	// Return the ccw next edge about the destination, pointing towards destination.
 	Edge::Ptr Dnext();
 
-	/** Return the ccw next edge about the left-face. */
+	// Return the ccw next edge about the left-face.
 	Edge::Ptr Lnext();
 
-	/** Return the ccw next edge about the right-face. */
+	// Return the ccw next edge about the right-face.
 	Edge::Ptr Rnext();
 
-	/** Return the cw next edge about the origin, pointing away from origin. */
+	// Return the cw next edge about the origin, pointing away from origin.
 	Edge::Ptr Oprev();
 
-	/** Return the cw next edge about the destination, pointing towards destination. */
+	// Return the cw next edge about the destination, pointing towards destination.
 	Edge::Ptr Dprev();
 
-	/** Return the cw next edge about the left-face. */
+	// Return the cw next edge about the left-face.
 	Edge::Ptr Lprev();
 
-	/** Return the cw next edge about the right-face. */
+	// Return the cw next edge about the right-face.
 	Edge::Ptr Rprev();
 };
 
