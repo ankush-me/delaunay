@@ -32,7 +32,7 @@ void getArguments(int, char**);
 void InsertPoints(Subdivision&);
 
 char *program;
-int num = 1000;
+int num = 6;
 
 static void usage() {
 	cout<< "usage: "<< program << " [ -n number_of_points ]\n";

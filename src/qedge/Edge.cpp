@@ -18,7 +18,7 @@ Vector2d::Ptr Edge::org() {
 	return origin;
 }
 Vector2d::Ptr Edge::dest() {
-	return Sym()->Org();
+	return Sym()->org();
 }
 /** Set the origin/ destination of this edge.*/
 void Edge::setOrg(Vector2d::Ptr pt) {

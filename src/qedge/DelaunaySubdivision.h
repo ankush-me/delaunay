@@ -14,10 +14,10 @@
 #include "Data.h"
 #include <Eigen/Dense>
 
-/** Specify the data-structure used for point-location. */
-enum PointLocationType {
-	WALKING,
-	HISTORY_DAG
+/** The type of division used in divide-conquer algo. */
+enum CutsType {
+	VERTICAL_CUTS,
+	ALTERNATE_CUTS
 };
 
 
@@ -26,12 +26,12 @@ class DelaunaySubdivision {
 	/** List of all the quad-edges in the subdivision. */
 	boost::unordered_set<QuadEdge::Ptr> qedges;
 
-	/** Point location method to be used. */
-	const PointLocationType location;
+	/** The type of division used in divide-conquer algo. */
+	const CutsType location;
 
 public:
-
-	DelaunaySubdivision(PointLocationType t);
+	typedef boost::shared_ptr<DelaunaySubdivision> Ptr;
+	DelaunaySubdivision(CutsType t);
 
 	/** Adds a new edge connecting the destination of e1 to the origin of e2.
 	 *  Returns the first primal edge of the newly added quad-edge.*/

@@ -7,7 +7,7 @@
 
 
 /** Constructor. */
-DelaunaySubdivision::DelaunaySubdivision(PointLocationType t) : location(t), qedges() {}
+DelaunaySubdivision::DelaunaySubdivision(CutsType t) : location(t), qedges() {}
 
 
 /** Adds a new edge connecting the destination of e1 to the origin of e2.
@@ -30,15 +30,21 @@ Edge::Ptr DelaunaySubdivision::connect(Edge::Ptr e1, Edge::Ptr e2) {
 void DelaunaySubdivision::deleteEdge(Edge::Ptr e) {
 	Edge::splice(e, e->Oprev());
 	Edge::splice(e->Sym(), e->Sym()->Oprev());
-	qedges.erase(e);
+	qedges.erase(e); // remove from the hash-set
 }
 
 /** Flips the diagonal of the quadrilateral containing e. From G&S [pg. 104]. */
 void DelaunaySubdivision::swap(Edge::Ptr e) {
 	Edge::Ptr a = e->Oprev();
 	Edge::Ptr b = e->Sym()->Oprev();
+
+	// disconnect the edge
 	Edge::splice(e, a);           Edge::splice(e->Sym(), b);
+
+	// reconnect the edge
 	Edge::splice(e, a->Lnext());  Edge::splice(e->Sym(), b->Lnext());
+
+	// update coordinates
 	e->setOrg(a->dest());
 	e->setDest(b->dest());
 }

@@ -9,15 +9,31 @@
 #include <Eigen/Dense>
 
 /** allocator for points. Vector{3,X}f don't need aligned allocators.*/
+
+//float
 typedef  Eigen::aligned_allocator<Eigen::Vector2f>   allocator2f;
 typedef  std::allocator<Eigen::Vector3f>             allocator3f;
 typedef  Eigen::aligned_allocator<Eigen::Vector4f>   allocator4f;
 typedef  std::allocator<Eigen::VectorXf>             allocatorXf;
 
+// double
+typedef  Eigen::aligned_allocator<Eigen::Vector2d>   allocator2d;
+typedef  std::allocator<Eigen::Vector3d>             allocator3d;
+typedef  Eigen::aligned_allocator<Eigen::Vector4d>   allocator4d;
+typedef  std::allocator<Eigen::VectorXd>             allocatorXd;
+
+
 /** aligned vector types. */
-typedef  std::vector<Eigen::Vector2f, allocator2f> vector2;
-typedef  std::vector<Eigen::Vector3f, allocator3f> vector3;
-typedef  std::vector<Eigen::Vector4f, allocator4f> vector4;
-typedef  std::vector<Eigen::VectorXf, allocatorXf> vectorX;
+// float
+typedef  std::vector<Eigen::Vector2f, allocator2f> vector2f;
+typedef  std::vector<Eigen::Vector3f, allocator3f> vector3f;
+typedef  std::vector<Eigen::Vector4f, allocator4f> vector4f;
+typedef  std::vector<Eigen::VectorXf, allocatorXf> vectorXf;
+
+// double
+typedef  std::vector<Eigen::Vector2d, allocator2d> vector2d;
+typedef  std::vector<Eigen::Vector3d, allocator3d> vector3d;
+typedef  std::vector<Eigen::Vector4d, allocator4d> vector4d;
+typedef  std::vector<Eigen::VectorXd, allocatorXd> vectorXd;
 
 #endif /* __ALIGNEDVECTOR__ */
