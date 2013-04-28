@@ -37,7 +37,7 @@ public:
 	 *  if we need an edge which forms a loop in the primal space.
 	 *
 	 *  It returns a pointer to the first primal edge. */
-	static Edge::Ptr makeEdge(bool loop = false);
+	static boost::shared_ptr<Edge> makeEdge(bool loop = false);
 };
 
 #endif //__QUADEDGE_H__

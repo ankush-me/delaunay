@@ -44,29 +44,29 @@ void readNodeFile(const std::string &fname, vector2d &pts) {
 				continue;
 
 			if (!readFirstLine) {
-				assert(("\nFirst line of .node should be\n\t"
+				assert(("First line of .node should be : "
 						"<# of vertices> <dimension (must be 2)> <# of attributes>"
-						"<# of boundary markers (0 or 1)>\n", splitline.size()== 4));
+						"<# of boundary markers (0 or 1)>", splitline.size()== 4));
 				N   = atoi(splitline[0].c_str());
 				dim = atoi(splitline[1].c_str());
-				assert(("\nDimension of vertices must be 2\n", dim==2));
+				assert(("Dimension of vertices must be 2", dim==2));
 				pts.clear();
 				pts.resize(N);
 				i = 0;
 				readFirstLine = true;
 			} else { // read the vertices
-				assert(("\nInsufficient data while reading .node file. "
-						"Vertices should be specified in the following format :\n\t"
-						"<vertex #> <x> <y> [attributes] [boundary marker]\n", splitline.size() >= 3));
+				assert(("Insufficient data while reading .node file. "
+						"Vertices should be specified in the following format : "
+						"<vertex #> <x> <y> [attributes] [boundary marker]", splitline.size() >= 3));
 				double x = boost::lexical_cast<double>(splitline[1]);
-				double y = boost::lexical_cast<double>(splitline[1]);
+				double y = boost::lexical_cast<double>(splitline[2]);
 				Eigen::Vector2d pt(x,y);
 
 				if (i < N) {
 					pts[i] = pt;
 					i += 1;
 				} else {
-					cout << "Expecting "<< N << " points. Found more while reading "
+					cout << ">>> Expecting "<< N << " points. Found more while reading "
 						 << fname << ". Skipping."<< endl; break;}
 			}
 		}

@@ -4,3 +4,6 @@ target_link_libraries(test_viewer  osgviewer utils)
 
 add_executable(test_ptr test_ptr.cpp)
 target_link_libraries(test_ptr  utils)
+
+add_executable(test_read_node test_read_node.cpp 
+                              ${CMAKE_SOURCE_DIR}/src/qedge/io_utils.cpp)

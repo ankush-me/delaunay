@@ -14,13 +14,12 @@
 
 
 class Edge {
+public: typedef	 boost::shared_ptr<Edge> Ptr;
+
 private:
 
 	// let quad-edge access the private members
 	friend class QuadEdge;
-
-	typedef	 boost::shared_ptr<Edge> Ptr;
-
 
 	// the index of this edge in QuadEdge's list of 4 edges; \in {0,1,2,3}
 	const int idx;
@@ -39,7 +38,6 @@ private:
 	Edge::Ptr     next;
 
 public:
-
 	// the index of this edge in QuadEdge's list of 4 edges; \in {0,1,2,3}
 	Edge(int _idx) : idx(_idx) {}
 

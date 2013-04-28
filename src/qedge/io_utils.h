@@ -12,6 +12,9 @@
 #include <Eigen/AlignedVector>
 #include "DelaunaySubdivision.h"
 
+#define STRINGIFY(x) #x
+#define EXPAND(x) STRINGIFY(x)
+
 /** Reads a .node file specifying 2-dimension points
  *  into a vector of Eigen::Vector2d points.*/
 void readNodeFile(const std::string &fname, vector2d &pts);
