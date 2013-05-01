@@ -9,10 +9,13 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_set.hpp>
+#include "utils/geom_predicates.h"
+#include <utility>
 #include "QuadEdge.h"
 #include "Edge.h"
 #include "Data.h"
 #include <Eigen/Dense>
+
 
 /** The type of division used in divide-conquer algo. */
 enum CutsType {
@@ -43,6 +46,26 @@ public:
 	/** Flips the diagonal of the quadrilateral containing e. From G&S [pg. 104]. */
 	void swap(Edge::Ptr e);
 
+
+	/** Implements the G&S [pg. 114] divide-and-conquer algorithm for delaunay triangulation
+	 *  using VERTICAL CUTS.
+	 *
+	 *  PTS : vector of points. it is assumed that PTS.size() > 1 and that they are lexicographically sorted.
+	 *  start : the start index of PTS
+	 *  end   : the end index   of PTS */
+	std::pair<Edge::Ptr, Edge::Ptr> divideConquerVerticalCuts(vector2d pts, int start, int end);
 };
 
+// see page G&S page 113 for the following functions
+/** is the point x to the right of the edge e.*/
+bool rightOf(Vector2d::Ptr x, Edge::Ptr e);
+
+/** is the point x to the left of the edge e.*/
+bool leftOf(Vector2d::Ptr x, Edge::Ptr e);
+
+/** An edge e is valid iff, its destination lies to right the edge basel.*/
+bool valid(Edge::Ptr e, Edge::Ptr basel);
+
+
 #endif
+

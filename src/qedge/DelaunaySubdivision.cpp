@@ -5,6 +5,24 @@
 
 #include "DelaunaySubdivision.h"
 
+using namespace Eigen;
+using namespace std;
+
+/** is the point x to the right of the edge e.*/
+bool rightOf (Vector2d::Ptr x, Edge::Ptr e) {
+	return ccw(*x,*(e->dest()), *(e->org()));
+}
+
+/** is the point x to the left of the edge e.*/
+bool leftOf(Vector2d::Ptr x, Edge::Ptr e) {
+	return ccw(*x, *(e->org()), *(e->dest()));
+}
+
+/** An edge e is valid iff, its destination lies to right the edge basel.*/
+bool valid (Edge::Ptr e, Edge::Ptr basel) {
+	return rightOf(e->dest(), basel);
+}
+
 
 /** Constructor. */
 DelaunaySubdivision::DelaunaySubdivision(CutsType t) : location(t), qedges() {}
@@ -47,4 +65,18 @@ void DelaunaySubdivision::swap(Edge::Ptr e) {
 	// update coordinates
 	e->setOrg(a->dest());
 	e->setDest(b->dest());
+}
+
+
+/** Implements the G&S [pg. 114] divide-and-conquer algorithm for delaunay triangulation
+ *  using VERTICAL CUTS.
+ *
+ *  PTS : vector of points. it is assumed that PTS.size() > 1 and that they are lexicographically sorted.
+ *  start : the start index of PTS
+ *  end   : the end index   of PTS */
+std::pair<Edge::Ptr, Edge::Ptr> DelaunaySubdivision::divideConquerVerticalCuts(vector2d pts, int start, int end) {
+	if (pts.size() < 2) {
+		cout << " Divide and conquer expecting at least 2 points. Found "<<pts.size()<<endl;
+		throw(-1);
+	}
 }
