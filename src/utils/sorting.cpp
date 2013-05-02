@@ -14,6 +14,19 @@ bool PtrCoordinateComparator::operator() (const boost::shared_ptr<Eigen::Vector2
 	return false;
 }
 
+PtrCoordinateComparatorEQ::PtrCoordinateComparatorEQ(int _d, int _i) : d(_d), i(mod(_i,d)) {}
+bool PtrCoordinateComparatorEQ::operator() (const boost::shared_ptr<Eigen::Vector2d> &v1,
+		const boost::shared_ptr<Eigen::Vector2d> &v2) const {
+	int c = i;
+	do {
+		if ((*v1)[c] == (*v2)[c])
+			c = mod(c+1,d);
+		else
+			return ((*v1)[c] <= (*v2)[c]);
+	} while (c != i);
+	return false;
+}
+
 
 
 CoordinateComparator::CoordinateComparator(int _d, int _i) : d(_d), i(mod(_i,d)) {}

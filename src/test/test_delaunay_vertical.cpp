@@ -45,7 +45,7 @@ void doDelaunay(vector2d &pts, bool verbose=false) {
 	vector<Vector2dPtr> ptrPTS = toPtrVector(pts);
 
 	DelaunaySubdivision subD(VERTICAL_CUTS);
-	subD.divideConquerVerticalCuts(ptrPTS, 0, pts.size()-1);
+	subD.divideConquerAlternatingCuts(ptrPTS, 0, pts.size()-1);
 
 	vector3f pts0(subD.qedges.size()), pts1(subD.qedges.size());
 	int i = 0;
@@ -92,6 +92,33 @@ void testRand(const int N=10) {
 	doDelaunay(pts);
 }
 
+/** Plots the delaunay triangulation of a random set of points. */
+void testBox(const int N=10) {
+
+//	vector2d pts(9);
+//	pts[0] = Vector2d(0,0);
+//	pts[1] = Vector2d(1,0);
+//	pts[2] = Vector2d(1,1);
+//	pts[3] = Vector2d(0,1);
+//	pts[4] = Vector2d(2,0);
+//	pts[5] = Vector2d(2,1);
+//
+//	pts[6] = Vector2d(0,2);
+//	pts[7] = Vector2d(1,2);
+//	pts[8] = Vector2d(2,2);
+//
+
+	vector2d pts(5);
+	pts[0] = Vector2d(0,0);
+	pts[1] = Vector2d(1,0);
+	pts[2] = Vector2d(0,1);
+	pts[3] = Vector2d(0,2);
+	pts[4] = Vector2d(1,1);
+
+
+	doDelaunay(pts,true);
+}
+
 
 int main (int argc, char* argv[]) {
 	int N = 5;
@@ -99,6 +126,7 @@ int main (int argc, char* argv[]) {
 		N = atoi(argv[1]);
 	}
 	//testRand(N);
-	testNODEFile(1);
+	//testNODEFile(7);
+	testBox();
 	return 0;
 }

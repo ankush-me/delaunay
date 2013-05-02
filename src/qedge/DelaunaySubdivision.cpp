@@ -107,6 +107,10 @@ DelaunaySubdivision::doBaseCases(std::vector<Vector2dPtr> &pts, const int start,
 		Edge::Ptr a =  QuadEdge::makeEdge(); qedges.insert(a->qEdge());
 		a->setOrg (pts[start + 0]);
 		a->setDest(pts[start + 1]);
+		cout << "  base case: size : "<<SIZE<<endl;
+		cout << "   first handle  : ["<<a->org()->transpose()<<"]-->["<<a->dest()->transpose()<<"]"<<endl;
+		cout << "   second handle : ["<<a->Sym()->org()->transpose()<<"]-->["<<a->Sym()->dest()->transpose()<<"]"<<endl;
+
 		return make_pair(a, a->Sym());
 	}
 
@@ -125,11 +129,23 @@ DelaunaySubdivision::doBaseCases(std::vector<Vector2dPtr> &pts, const int start,
 		// close the triangle
 		if (ccw(p1, p2, p3)) {
 			Edge::Ptr c = connect(b, a);
+
+			cout << "  base case: size : "<<SIZE<<endl;
+			cout << "   first handle  : ["<<a->org()->transpose()<<"]-->["<<a->dest()->transpose()<<"]"<<endl;
+			cout << "   second handle : ["<<b->Sym()->org()->transpose()<<"]-->["<<b->Sym()->dest()->transpose()<<"]"<<endl;
+
 			return make_pair(a, b->Sym());
 		} else if (ccw(p1, p3, p2)) {
 			Edge::Ptr c = connect(b, a);
+			cout << "  base case: size : "<<SIZE<<endl;
+			cout << "   first handle : ["<<c->Sym()->org()->transpose()<<"]-->["<<c->Sym()->dest()->transpose()<<"]"<<endl;
+			cout << "   second handle  : ["<<c->org()->transpose()<<"]-->["<<c->dest()->transpose()<<"]"<<endl;
+
+
 			return make_pair(c->Sym(), c);
 		} else {// collinear
+			cout << "   first handle  : ["<<a->org()->transpose()<<"]-->["<<a->dest()->transpose()<<"]"<<endl;
+			cout << "   second handle : ["<<b->Sym()->org()->transpose()<<"]-->["<<b->Sym()->dest()->transpose()<<"]"<<endl;
 			return make_pair(a, b->Sym());
 		}
 	}
@@ -181,6 +197,14 @@ DelaunaySubdivision::divideConquerAlternatingCuts(std::vector<Vector2dPtr> &pts,
 		// sort lexico-graphically for further processing.
 		// this takes constant time, as the size is constant.
 		lexicoSort(pts, start, end);
+
+		cout << "BASE CASE : \n"
+				<< "  SIZE  : "<<SIZE<<"\n"
+				<< "  Points [sorted] : \n";
+		for (int i=0; i < SIZE; i++) {
+			cout << "   "<<pts[start+i]->transpose()<<endl;
+		}
+
 		return doBaseCases(pts, start, end);
 	} else {
 		// make recursive calls. Split the points into left and right
@@ -192,6 +216,12 @@ DelaunaySubdivision::divideConquerAlternatingCuts(std::vector<Vector2dPtr> &pts,
 			first_handles  = rotate_handles(first_handles);
 			second_handles = rotate_handles(second_handles);
 		}
+		cout << "MERGING ..\n";
+		cout << "   bottom handle 0  : ["<<first_handles.first->org()->transpose()<<"]-->["<<first_handles.first->dest()->transpose()<<"]"<<endl;
+		cout << "   bottom handle 1  : ["<<first_handles.second->org()->transpose()<<"]-->["<<first_handles.second->dest()->transpose()<<"]"<<endl;
+		cout << "   bottom handle 0  : ["<<second_handles.first->org()->transpose()<<"]-->["<<second_handles.first->dest()->transpose()<<"]"<<endl;
+		cout << "   bottom handle 1  : ["<<second_handles.second->org()->transpose()<<"]-->["<<second_handles.second->dest()->transpose()<<"]"<<endl;
+
 		pair<Edge::Ptr, Edge::Ptr> outer_handles  = mergeTriangulations (first_handles, second_handles);
 		return ((axis==1)? unrotate_handles(outer_handles) : outer_handles);
 	}

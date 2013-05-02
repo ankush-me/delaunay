@@ -11,6 +11,21 @@
 
 /** Compare points::Ptr based on i_th coordinate.
  *   - Ties broken using subsequent coordinates. */
+struct PtrCoordinateComparatorEQ : std::binary_function
+<boost::shared_ptr<Eigen::Vector2d>, boost::shared_ptr<Eigen::Vector2d>, bool> {
+	// dimensions of the vector
+	const int d;
+	// the coordinate index based on which two points should be compared
+	const int i;
+	PtrCoordinateComparatorEQ(int _d, int _i);
+
+	bool operator() (const boost::shared_ptr<Eigen::Vector2d> &v1,
+			const boost::shared_ptr<Eigen::Vector2d> &v2) const ;
+};
+
+
+/** Compare points::Ptr based on i_th coordinate.
+ *   - Ties broken using subsequent coordinates. */
 struct PtrCoordinateComparator : std::binary_function
 <boost::shared_ptr<Eigen::Vector2d>, boost::shared_ptr<Eigen::Vector2d>, bool> {
 	// dimensions of the vector

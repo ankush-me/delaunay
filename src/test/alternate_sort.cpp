@@ -5,6 +5,8 @@
 #include <Eigen/AlignedVector>
 #include <boost/shared_ptr.hpp>
 
+#include "qedge/Data.h"
+
 #include <vector>
 #include <limits>
 
@@ -46,6 +48,13 @@ int main(int argc, char** argv) {
 	for (int i = 0 ; i < N; i+=1) {
 		cout <<pts[i]->transpose()<<endl;
 	}
+
+	Vector2dPtr v1, v2;
+	v1.reset(new Vector2d(0,1));
+	v2.reset(new Vector2d(1,1));
+	PtrCoordinateComparatorEQ y_comparator(2,1);
+	cout << "COMP : "<<((y_comparator(v1,v2))? "true" : "false")<<endl;
+
 
 	//median = a[size/2];
 	return 0;
