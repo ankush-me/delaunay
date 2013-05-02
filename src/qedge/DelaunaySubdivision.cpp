@@ -68,15 +68,21 @@ void DelaunaySubdivision::swap(Edge::Ptr e) {
 }
 
 
-/** Implements the G&S [pg. 114] divide-and-conquer algorithm for delaunay triangulation
- *  using VERTICAL CUTS.
+/** Implements the G&S [pg. 114] divide-and-conquer algorithm
+ *  for delaunay triangulation using VERTICAL CUTS.
  *
- *  PTS : vector of points. it is assumed that PTS.size() > 1 and that they are lexicographically sorted.
+ *  PTS   : vector of points. it is assumed that PTS.size() > 1
+ *          and that they are LEXICOGRAPHICALLY SORTED.
  *  start : the start index of PTS
  *  end   : the end index   of PTS */
 std::pair<Edge::Ptr, Edge::Ptr> DelaunaySubdivision::divideConquerVerticalCuts(vector2d pts, int start, int end) {
 	if (pts.size() < 2) {
-		cout << " Divide and conquer expecting at least 2 points. Found "<<pts.size()<<endl;
+		cout << " Divide and conquer expecting at least 2 points. Found "<<pts.size()<<" ."<<endl;
 		throw(-1);
+	}
+
+	if (pts.size()==2) {
+		Edge::Ptr e =  QuadEdge::makeEdge();
+
 	}
 }
