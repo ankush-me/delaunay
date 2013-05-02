@@ -73,7 +73,7 @@ bool leftOf(Vector2dPtr x, Edge::Ptr e);
 bool valid(Edge::Ptr e, Edge::Ptr basel);
 
 /** Wrapper for incircle (orient2d) function.*/
-double incicle(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c, Vector2dPtr d);
+bool incircle(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c, Vector2dPtr d);
 
 #endif
 

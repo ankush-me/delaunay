@@ -14,8 +14,8 @@ bool  ccw(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c) {
 }
 
 /** Wrapper for incircle (orient2d) function.*/
-double incicle(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c, Vector2dPtr d) {
-	return incircle(*a, *b, *c, *d);
+bool incircle(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c, Vector2dPtr d) {
+	return incircle(*a, *b, *c, *d) > 0.0;
 }
 
 
@@ -44,6 +44,7 @@ DelaunaySubdivision::DelaunaySubdivision(CutsType t) : location(t), qedges() {}
  *  From G&S [pg. 103].*/
 Edge::Ptr DelaunaySubdivision::connect(Edge::Ptr e1, Edge::Ptr e2) {
 	Edge::Ptr e = QuadEdge::makeEdge();
+	qedges.insert(e);
 
 	e->setOrg(e1->dest());
 	e->setDest(e2->org());
@@ -78,7 +79,6 @@ void DelaunaySubdivision::swap(Edge::Ptr e) {
 	e->setDest(b->dest());
 }
 
-
 /** Implements the G&S [pg. 114] divide-and-conquer algorithm
  *  for delaunay triangulation using VERTICAL CUTS.
  *
@@ -104,7 +104,7 @@ DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> pts, int star
 	else if (SIZE == 2) {
 
 		// make a single edge
-		Edge::Ptr a =  QuadEdge::makeEdge();
+		Edge::Ptr a =  QuadEdge::makeEdge(); qedges.insert(a);
 		a->setOrg (pts[start + 0]);
 		a->setDest(pts[start + 1]);
 		return make_pair(a, a->Sym());
@@ -117,8 +117,8 @@ DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> pts, int star
 		Vector2dPtr p3  = pts[start + 2];
 
 		// make two edges
-		Edge::Ptr a = QuadEdge::makeEdge();
-		Edge::Ptr b = QuadEdge::makeEdge();
+		Edge::Ptr a = QuadEdge::makeEdge(); qedges.insert(a);
+		Edge::Ptr b = QuadEdge::makeEdge(); qedges.insert(b);
 		Edge::splice(a->Sym(), b);
 		a->setOrg(p1); a->setDest(p2);
 		b->setOrg(p2); b->setDest(p3);
@@ -159,35 +159,29 @@ DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> pts, int star
 			Edge::Ptr lcand = basel->Sym()->Onext();
 			if (valid(lcand, basel)) {
 				while (incircle(basel->dest(), basel->org(), lcand->dest(), lcand->Onext()->dest())) {
-					Edge::Ptr t = lcand->Onext();
-					deleteEdge(lcand);
-					lcand = t;
+					lcand = lcand->Onext();
+					deleteEdge(lcand->Oprev());
 				}
 			}
 
 			Edge::Ptr rcand = basel->Oprev();
 			if (valid(rcand, basel)) {
 				while (incircle(basel->dest(), basel->org(), rcand->dest(), rcand->Oprev()->dest())) {
-					Edge::Ptr t = rcand->Oprev();
-					deleteEdge(rcand);
-					lcand = t;
+					rcand = rcand->Oprev();
+					deleteEdge(rcand->Onext());
 				}
 			}
 
+			const bool lvalid = valid(lcand, basel);
+			const bool rvalid = valid(rcand, basel);
 
-			if (!rightof(DEST(lcand), basel) && !rightof(DEST(rcand), basel)) break;
+			// we have reached the upper common tangent. This exits out of the merge loop.
+			if (!lvalid && !rvalid) break;
 
-			if ( !rightof(DEST(lcand), basel) ||
-					( rightof(DEST(rcand), basel) &&
-							incircle(DEST(lcand), ORG(lcand), ORG(rcand), DEST(rcand))
-					)
-			)
-				basel = connect(rcand, SYM(basel));
-			else
-				basel = connect(SYM(basel), SYM(lcand));
+			// check which side to connect to.
+			const bool check =  (!lvalid || (rvalid && incircle(lcand->dest(), lcand->org(), rcand->org(), rcand->dest())));
+			basel = (check)? connect(rcand, basel->Sym()) : connect(basel->Sym(), lcand->Sym());
 		}
-		*le = ldo; *re = rdo;
+		return make_pair(ldo, rdo);
 	}
-
-}
 }
