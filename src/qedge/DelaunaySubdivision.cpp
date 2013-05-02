@@ -79,33 +79,29 @@ void DelaunaySubdivision::swap(Edge::Ptr e) {
 	e->setDest(b->dest());
 }
 
-/** Implements the G&S [pg. 114] divide-and-conquer algorithm
- *  for delaunay triangulation using VERTICAL CUTS.
- *
- *  PTS   : vector of points. it is assumed that PTS.size() > 1
- *          and that they are LEXICOGRAPHICALLY SORTED.
- *                            -------------------------
- *  start : the start index of PTS [INCLUSIVE].
- *  end   : the end   index of PTS [INCLUSIVE]. */
-std::pair<Edge::Ptr, Edge::Ptr>
-DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> pts, int start, int end) {
 
+/** Does mundane checks on the range of the indices. */
+void DelaunaySubdivision::checkRange(std::vector<Vector2dPtr> &pts,
+		const int start, const int end) const {
 	// check the range of the indices.
 	assert (("Delaunay Div-&-Conquer : Indices out of range.",
 			0<=start && start < pts.size()));
 	assert (("Delaunay Div-&-Conquer : Indices out of range.",
 			start <= end && 0<=end && end<pts.size()));
 
-	const int SIZE = end-start+1;
-
-	if (SIZE < 2) {
+	if (end-start+1 < 2) {
 		cout << " Divide and conquer expecting at least 2 points. Found "
 				<< pts.size() << " ." << endl;
 		throw(-1);
 	}
+}
 
-	else if (SIZE == 2) {
 
+/** Handles base-cases of delaunay triangulation; i.e. when |S| is 2 or 3.*/
+std::pair<Edge::Ptr, Edge::Ptr>
+DelaunaySubdivision::doBaseCases(std::vector<Vector2dPtr> &pts, const int start, const int end) {
+	const int SIZE = end-start+1;
+	if (SIZE == 2) {
 		// make a single edge
 		Edge::Ptr a =  QuadEdge::makeEdge(); qedges.insert(a->qEdge());
 		a->setOrg (pts[start + 0]);
@@ -114,7 +110,6 @@ DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> pts, int star
 	}
 
 	else if (SIZE == 3) {
-
 		Vector2dPtr p1  = pts[start + 0];
 		Vector2dPtr p2  = pts[start + 1];
 		Vector2dPtr p3  = pts[start + 2];
@@ -137,7 +132,23 @@ DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> pts, int star
 			return make_pair(a, b->Sym());
 		}
 	}
+}
 
+/** Implements the G&S [pg. 114] divide-and-conquer algorithm
+ *  for delaunay triangulation using VERTICAL CUTS.
+ *
+ *  PTS   : vector of points. it is assumed that PTS.size() > 1
+ *          and that they are LEXICOGRAPHICALLY SORTED.
+ *                            -------------------------
+ *  start : the start index of PTS [INCLUSIVE].
+ *  end   : the end   index of PTS [INCLUSIVE]. */
+std::pair<Edge::Ptr, Edge::Ptr>
+DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> &pts, int start, int end) {
+	const int SIZE = end-start+1;
+	checkRange(pts, start, end);
+
+	if (SIZE==2 || SIZE==3)
+		return doBaseCases(pts, start, end);
 	else {
 		// make recursive calls. Split the points into left and right
 		const int mid = start + (end-start)/2;
@@ -148,6 +159,41 @@ DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> pts, int star
 	}
 }
 
+
+/** Adapted from the G&S [pg. 114] divide-and-conquer algorithm
+ *  for delaunay triangulation using ALTERNATING CUTS.
+ *
+ *  ********** THIS FUNCTION DOES NOT ASSUME THAT THE POINTS ARE SORTED**********
+ *
+ *  PTS   : vector of points. it is assumed that PTS.size() > 1
+ *  start : the start index of PTS
+ *  end   : the end index   of PTS
+ *  axis  : the axis along which the point-set needs to be cut. */
+std::pair<Edge::Ptr, Edge::Ptr>
+DelaunaySubdivision::divideConquerAlternatingCuts(std::vector<Vector2dPtr> &pts,
+		int start, int end, int axis) {
+
+	const int SIZE = end-start+1;
+	checkRange(pts, start, end);
+
+	if (SIZE == 2 || SIZE ==3) {
+		// sort lexico-graphically for further processing.
+		lexicoSort(pts, start, end);
+		return doBaseCases(pts, start, end);
+	} else {
+		// make recursive calls. Split the points into left and right
+		const int mid = median(pts, start, end, axis);
+		pair<Edge::Ptr, Edge::Ptr> first_handles  = divideConquerAlternatingCuts(pts, start, mid, mod(axis+1,2));
+		pair<Edge::Ptr, Edge::Ptr> second_handles = divideConquerAlternatingCuts(pts, mid+1, end, mod(axis+1,2));
+
+		if (axis==0) { //horizontal cut : rotate handles
+			first_handles  = rotate_handles(first_handles);
+			second_handles = rotate_handles(second_handles);
+		}
+		pair<Edge::Ptr, Edge::Ptr> outer_handles  = mergeTriangulations (first_handles, second_handles);
+		return ((axis==0)? unrotate_handles(outer_handles) : outer_handles);
+	}
+}
 
 /** Merges triangulations, given the appropriate handles of their convex hulls.
  *  if the triangulations are LEFT, RIGHT, then:

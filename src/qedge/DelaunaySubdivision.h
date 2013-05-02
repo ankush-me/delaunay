@@ -29,6 +29,25 @@ class DelaunaySubdivision {
 	/** The type of division used in divide-conquer algo. */
 	const CutsType location;
 
+	/** Does mundane checks on the range of the indices. */
+	void checkRange(std::vector<Vector2dPtr> &pts, const int start, const int end) const;
+
+	/** Handles base-cases of delaunay triangulation; i.e. when |S| is 2 or 3.*/
+	std::pair<Edge::Ptr, Edge::Ptr> doBaseCases(std::vector<Vector2dPtr> &pts, const int start, const int end);
+
+
+	/** Merges triangulations, given the appropriate handles of their convex hulls.
+	 *  if the triangulations are LEFT, RIGHT, then:
+	 *			handles correspond to lexicomin and max vertices.
+	 *	if the triangulations are TOP, BOTTOM, then:
+	 *			handles should correspond to topmost, bottom-most points.
+	 *          (i.e. points in lexico-order but in (y,x) comparison order).
+	 *
+	 *  Returns the outer handles.*/
+	std::pair<Edge::Ptr, Edge::Ptr>
+	mergeTriangulations(std::pair<Edge::Ptr, Edge::Ptr> first_hs,
+			               std::pair<Edge::Ptr, Edge::Ptr> second_hs);
+
 public:
 	typedef boost::shared_ptr<DelaunaySubdivision> Ptr;
 
@@ -47,20 +66,6 @@ public:
 	/** Flips the diagonal of the quadrilateral containing e. From G&S [pg. 104]. */
 	void swap(Edge::Ptr e);
 
-
-	/** Merges triangulations, given the appropriate handles of their convex hulls.
-	 *  if the triangulations are LEFT, RIGHT, then:
-	 *			handles correspond to lexicomin and max vertices.
-	 *	if the triangulations are TOP, BOTTOM, then:
-	 *			handles should correspond to topmost, bottom-most points.
-	 *          (i.e. points in lexico-order but in (y,x) comparison order).
-	 *
-	 *  Returns the outer handles.*/
-	std::pair<Edge::Ptr, Edge::Ptr>
-	mergeTriangulations(std::pair<Edge::Ptr, Edge::Ptr> first_hs,
-			               std::pair<Edge::Ptr, Edge::Ptr> second_hs);
-
-
 	/** Implements the G&S [pg. 114] divide-and-conquer algorithm
 	 *  for delaunay triangulation using VERTICAL CUTS.
 	 *
@@ -70,7 +75,20 @@ public:
 	 *  start : the start index of PTS
 	 *  end   : the end index   of PTS */
 	std::pair<Edge::Ptr, Edge::Ptr>
-	divideConquerVerticalCuts(std::vector<Vector2dPtr> pts, int start, int end);
+	divideConquerVerticalCuts(std::vector<Vector2dPtr> &pts, int start, int end);
+
+
+	/** Adapted from the G&S [pg. 114] divide-and-conquer algorithm
+	 *  for delaunay triangulation using ALTERNATING CUTS.
+	 *
+	 *  ********** THIS FUNCTION DOES NOT ASSUME THAT THE POINTS ARE SORTED**********
+	 *
+	 *  PTS   : vector of points. it is assumed that PTS.size() > 1
+	 *  start : the start index of PTS
+	 *  end   : the end index   of PTS
+	 *  axis  : the axis along which the point-set needs to be cut. */
+	std::pair<Edge::Ptr, Edge::Ptr>
+	divideConquerAlternatingCuts(std::vector<Vector2dPtr> &pts, int start, int end, int axis=0);
 };
 
 // wrapper for CCW checks for pointer to points.
