@@ -6,12 +6,32 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include "misc.h"
+#include <boost/shared_ptr.hpp>
 
-/** Gives the positive modulus. */
-template<typename V>
-V modL(const V& a, const V& b) {
-	return (a % b + b) % b;
-}
+/** Compare points::Ptr based on i_th coordinate.
+ *   - Ties broken using subsequent coordinates. */
+struct PtrCoordinateComparator : std::binary_function
+<boost::shared_ptr<Eigen::Vector2d>, boost::shared_ptr<Eigen::Vector2d>, bool> {
+	// dimensions of the vector
+	const int d;
+	// the coordinate index based on which two points should be compared
+	const int i;
+	PtrCoordinateComparator(int _d, int _i) : d(_d), i(mod(_i,d)) {}
+
+	bool operator() (const boost::shared_ptr<Eigen::Vector2d> &v1,
+			const boost::shared_ptr<Eigen::Vector2d> &v2) const {
+		int c = i;
+		do {
+			if ((*v1)[c] == (*v2)[c])
+				c = mod(c+1,d);
+			else
+				return ((*v1)[c] < (*v2)[c]);
+		} while (c != i);
+		return false;
+	}
+};
+
 
 // compare points based on i_th coordinate. Ties broken using subsequent coordinates.
 struct CoordinateComparator : std::binary_function <Eigen::VectorXd, Eigen::VectorXd, bool> {
@@ -20,13 +40,13 @@ struct CoordinateComparator : std::binary_function <Eigen::VectorXd, Eigen::Vect
 
 	// the coordinate index based on which two points should be compared
 	const int i;
-	CoordinateComparator(int _d, int _i) : d(_d), i(modL(_i,d)) {}
+	CoordinateComparator(int _d, int _i) : d(_d), i(mod(_i,d)) {}
 
 	bool operator() (const Eigen::VectorXd &v1, const Eigen::VectorXd &v2) const {
 		int c = i;
 		do {
 			if (v1[c] == v2[c])
-				c = modL(c+1,d);
+				c = mod(c+1,d);
 			else
 				return (v1[c] < v2[c]);
 		} while (c != i);
@@ -78,6 +98,38 @@ public:
 		return res;
 	}
 };
+
+
+/* Sorts the pts b/w [start, end] (inclusive) indices,
+ * based on COMP_I coordinate of the points, breaking ties
+ * by circularly subsequent coordinates. */
+void lexicoSort(std::vector<boost::shared_ptr<Eigen::Vector2d> > & pts,
+		int start, int end,  int comp_coord=0) {
+	PtrCoordinateComparator comp(2, comp_coord);
+	int n = pts.size();
+	if (n != 0)
+		sort(pts.begin()+start, pts.begin()+end+1, comp);
+}
+
+
+/** Partially sorts an array of points in [start, end] (inclusive)
+ *  such that [start,mid] < [mid,end].
+ *   - E[O(end-start+1)] (linear) time.
+ *   - Returns the index of the median element: mid \in [start, end].
+ *   - comp_coord : index of the coordinate based on which the
+ *                  comparisons should be done first.
+ *   - Uses nth_element function of the standard library.
+ *   - Mutates the vector b/w [start, end]. */
+int median(std::vector<boost::shared_ptr<Eigen::Vector2d> > & pts,
+		int start, int end, int comp_coord=0) {
+	if (start > end) return -1;
+	PtrCoordinateComparator comp(2, comp_coord);
+	const int mid = start + (end-start)/2;
+	std::nth_element(pts.begin()+start, pts.begin()+mid, pts.begin()+end+1, comp);
+	return mid;
+}
+
+
 
 /** Sort a vector of points lexicographically. In-place. */
 /** Sort a vector of points lexicographically. In-place. Redefined for aligned-vectors.*/
