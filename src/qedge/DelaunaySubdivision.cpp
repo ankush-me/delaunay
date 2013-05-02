@@ -178,6 +178,7 @@ DelaunaySubdivision::divideConquerAlternatingCuts(std::vector<Vector2dPtr> &pts,
 
 	if (SIZE == 2 || SIZE ==3) {
 		// sort lexico-graphically for further processing.
+		// this takes constant time, as the size is constant.
 		lexicoSort(pts, start, end);
 		return doBaseCases(pts, start, end);
 	} else {
