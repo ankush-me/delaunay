@@ -47,14 +47,20 @@ public:
 	void swap(Edge::Ptr e);
 
 
-	/** Implements the G&S [pg. 114] divide-and-conquer algorithm for delaunay triangulation
-	 *  using VERTICAL CUTS.
+	/** Implements the G&S [pg. 114] divide-and-conquer algorithm
+	 *  for delaunay triangulation using VERTICAL CUTS.
 	 *
-	 *  PTS : vector of points. it is assumed that PTS.size() > 1 and that they are lexicographically sorted.
+	 *  PTS   : vector of points. it is assumed that PTS.size() > 1
+	 *          and that they are LEXICOGRAPHICALLY SORTED.
+	 *                            -------------------------
 	 *  start : the start index of PTS
 	 *  end   : the end index   of PTS */
-	std::pair<Edge::Ptr, Edge::Ptr> divideConquerVerticalCuts(vector2d pts, int start, int end);
+	std::pair<Edge::Ptr, Edge::Ptr>
+	divideConquerVerticalCuts(std::vector<Vector2dPtr> pts, int start, int end);
 };
+
+// wrapper for CCW checks for pointer to points.
+bool  ccw(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c);
 
 // see page G&S page 113 for the following functions
 /** is the point x to the right of the edge e.*/
@@ -66,6 +72,8 @@ bool leftOf(Vector2dPtr x, Edge::Ptr e);
 /** An edge e is valid iff, its destination lies to right the edge basel.*/
 bool valid(Edge::Ptr e, Edge::Ptr basel);
 
+/** Wrapper for incircle (orient2d) function.*/
+double incicle(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c, Vector2dPtr d);
 
 #endif
 

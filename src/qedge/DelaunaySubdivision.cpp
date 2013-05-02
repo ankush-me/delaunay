@@ -8,14 +8,25 @@
 using namespace Eigen;
 using namespace std;
 
+// wrapper for CCW checks for pointer to points.
+bool  ccw(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c) {
+	return ccw(*a, *b, *c);
+}
+
+/** Wrapper for incircle (orient2d) function.*/
+double incicle(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c, Vector2dPtr d) {
+	return incircle(*a, *b, *c, *d);
+}
+
+
 /** is the point x to the right of the edge e.*/
 bool rightOf (Vector2dPtr x, Edge::Ptr e) {
-	return ccw(*x,*(e->dest()), *(e->org()));
+	return ccw(x, e->dest(), e->org());
 }
 
 /** is the point x to the left of the edge e.*/
 bool leftOf(Vector2dPtr x, Edge::Ptr e) {
-	return ccw(*x, *(e->org()), *(e->dest()));
+	return ccw(x, e->org(), e->dest());
 }
 
 /** An edge e is valid iff, its destination lies to right the edge basel.*/
@@ -73,16 +84,110 @@ void DelaunaySubdivision::swap(Edge::Ptr e) {
  *
  *  PTS   : vector of points. it is assumed that PTS.size() > 1
  *          and that they are LEXICOGRAPHICALLY SORTED.
- *  start : the start index of PTS
- *  end   : the end index   of PTS */
-std::pair<Edge::Ptr, Edge::Ptr> DelaunaySubdivision::divideConquerVerticalCuts(vector2d pts, int start, int end) {
-	if (pts.size() < 2) {
+ *                            -------------------------
+ *  start : the start index of PTS [INCLUSIVE].
+ *  end   : the end   index of PTS [INCLUSIVE]. */
+std::pair<Edge::Ptr, Edge::Ptr>
+DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> pts, int start, int end) {
+
+	// check the range of the indices.
+	assert (("Delaunay Div-&-Conquer : Indices out of range.", 0<=start && start < pts.size()));
+	assert (("Delaunay Div-&-Conquer : Indices out of range.", start <= end && 0<=end && end<pts.size()));
+
+	const int SIZE = end-start+1;
+
+	if (SIZE < 2) {
 		cout << " Divide and conquer expecting at least 2 points. Found "<<pts.size()<<" ."<<endl;
 		throw(-1);
 	}
 
-	if (pts.size()==2) {
-		Edge::Ptr e =  QuadEdge::makeEdge();
+	else if (SIZE == 2) {
 
+		// make a single edge
+		Edge::Ptr a =  QuadEdge::makeEdge();
+		a->setOrg (pts[start + 0]);
+		a->setDest(pts[start + 1]);
+		return make_pair(a, a->Sym());
 	}
+
+	else if (SIZE == 3) {
+
+		Vector2dPtr p1  = pts[start + 0];
+		Vector2dPtr p2  = pts[start + 1];
+		Vector2dPtr p3  = pts[start + 2];
+
+		// make two edges
+		Edge::Ptr a = QuadEdge::makeEdge();
+		Edge::Ptr b = QuadEdge::makeEdge();
+		Edge::splice(a->Sym(), b);
+		a->setOrg(p1); a->setDest(p2);
+		b->setOrg(p2); b->setDest(p3);
+
+		// close the triangle
+		if (ccw(p1, p2, p3)) {
+			Edge::Ptr c = connect(b, a);
+			return make_pair(a, b->Sym());
+		} else if (ccw(p1, p3, p2)) {
+			Edge::Ptr c = connect(b, a);
+			return make_pair(c->Sym(), c);
+		} else {// collinear
+			return make_pair(a, b->Sym());
+		}
+	}
+
+	else {
+		// make recursive calls. Split the points into left and right
+		const int mid = start + (end-start)/2;
+		pair<Edge::Ptr, Edge::Ptr> lhandles = divideConquerVerticalCuts(pts, start, mid);
+		pair<Edge::Ptr, Edge::Ptr> rhandles = divideConquerVerticalCuts(pts, mid+1, end);
+		Edge::Ptr ldo = lhandles.first; Edge::Ptr ldi = lhandles.second;
+		Edge::Ptr rdi = rhandles.first; Edge::Ptr rdo = rhandles.second;
+
+		// compute the lower common tangent of L and R.
+		while (true) {
+			if       (leftOf(rdi->Sym(), ldi))     ldi = ldi->Lnext();
+			else if (rightOf(ldi->org(), rdi))  	rdi = rdi->Rprev();
+			else break;
+		}
+
+		Edge::Ptr basel = connect(rdi->Sym(), ldi);
+		if (*(ldi->org()) == *(ldo->org())) 	ldo = basel->Sym();
+		if (*(rdi->org()) == *(rdo->org())) 	rdo = basel;
+
+		// merge the two triangulations
+		while (true)  {
+			Edge::Ptr lcand = basel->Sym()->Onext();
+			if (valid(lcand, basel)) {
+				while (incircle(basel->dest(), basel->org(), lcand->dest(), lcand->Onext()->dest())) {
+					Edge::Ptr t = lcand->Onext();
+					deleteEdge(lcand);
+					lcand = t;
+				}
+			}
+
+			Edge::Ptr rcand = basel->Oprev();
+			if (valid(rcand, basel)) {
+				while (incircle(basel->dest(), basel->org(), rcand->dest(), rcand->Oprev()->dest())) {
+					Edge::Ptr t = rcand->Oprev();
+					deleteEdge(rcand);
+					lcand = t;
+				}
+			}
+
+
+			if (!rightof(DEST(lcand), basel) && !rightof(DEST(rcand), basel)) break;
+
+			if ( !rightof(DEST(lcand), basel) ||
+					( rightof(DEST(rcand), basel) &&
+							incircle(DEST(lcand), ORG(lcand), ORG(rcand), DEST(rcand))
+					)
+			)
+				basel = connect(rcand, SYM(basel));
+			else
+				basel = connect(SYM(basel), SYM(lcand));
+		}
+		*le = ldo; *re = rdo;
+	}
+
+}
 }
