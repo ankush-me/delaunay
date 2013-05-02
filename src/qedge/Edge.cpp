@@ -22,7 +22,7 @@ Vector2dPtr Edge::dest() {
 }
 /** Set the origin/ destination of this edge.*/
 void Edge::setOrg(Vector2dPtr pt) {
-	org = pt;
+	origin = pt;
 }
 void Edge::setDest(Vector2dPtr pt) {
 	Sym()->setOrg(pt);
@@ -33,7 +33,7 @@ void Edge::setDest(Vector2dPtr pt) {
  *  Code based on G&S [pg. 98, pg. 102].
  *
  *  Note: Since there is no "flip", the code is especially simple.*/
-static void Edge::splice(Edge::Ptr e1, Edge::Ptr e2) {
+void Edge::splice(Edge::Ptr e1, Edge::Ptr e2) {
 	Edge::Ptr alpha = e1->Onext()->Rot();
 	Edge::Ptr beta  = e2->Onext()->Rot();
 

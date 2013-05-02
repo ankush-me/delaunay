@@ -44,7 +44,7 @@ DelaunaySubdivision::DelaunaySubdivision(CutsType t) : location(t), qedges() {}
  *  From G&S [pg. 103].*/
 Edge::Ptr DelaunaySubdivision::connect(Edge::Ptr e1, Edge::Ptr e2) {
 	Edge::Ptr e = QuadEdge::makeEdge();
-	qedges.insert(e);
+	qedges.insert(e->qEdge());
 
 	e->setOrg(e1->dest());
 	e->setDest(e2->org());
@@ -60,7 +60,7 @@ Edge::Ptr DelaunaySubdivision::connect(Edge::Ptr e1, Edge::Ptr e2) {
 void DelaunaySubdivision::deleteEdge(Edge::Ptr e) {
 	Edge::splice(e, e->Oprev());
 	Edge::splice(e->Sym(), e->Sym()->Oprev());
-	qedges.erase(e); // remove from the hash-set
+	qedges.erase(e->qEdge()); // remove from the hash-set
 }
 
 /** Flips the diagonal of the quadrilateral containing e. From G&S [pg. 104]. */
@@ -104,7 +104,7 @@ DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> pts, int star
 	else if (SIZE == 2) {
 
 		// make a single edge
-		Edge::Ptr a =  QuadEdge::makeEdge(); qedges.insert(a);
+		Edge::Ptr a =  QuadEdge::makeEdge(); qedges.insert(a->qEdge());
 		a->setOrg (pts[start + 0]);
 		a->setDest(pts[start + 1]);
 		return make_pair(a, a->Sym());
@@ -117,8 +117,8 @@ DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> pts, int star
 		Vector2dPtr p3  = pts[start + 2];
 
 		// make two edges
-		Edge::Ptr a = QuadEdge::makeEdge(); qedges.insert(a);
-		Edge::Ptr b = QuadEdge::makeEdge(); qedges.insert(b);
+		Edge::Ptr a = QuadEdge::makeEdge(); qedges.insert(a->qEdge());
+		Edge::Ptr b = QuadEdge::makeEdge(); qedges.insert(b->qEdge());
 		Edge::splice(a->Sym(), b);
 		a->setOrg(p1); a->setDest(p2);
 		b->setOrg(p2); b->setDest(p3);
@@ -145,7 +145,7 @@ DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> pts, int star
 
 		// compute the lower common tangent of L and R.
 		while (true) {
-			if       (leftOf(rdi->Sym(), ldi))     ldi = ldi->Lnext();
+			if       (leftOf(rdi->org(), ldi))     ldi = ldi->Lnext();
 			else if (rightOf(ldi->org(), rdi))  	rdi = rdi->Rprev();
 			else break;
 		}

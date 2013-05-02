@@ -1,11 +1,12 @@
 #include "QuadEdge.h"
+#include "Edge.h"
 
 QuadEdge::QuadEdge() : edges(4) {}
 
 
 /** Makes a new quad-edge.
  *  It returns a pointer to the first primal edge. */
-static Edge::Ptr QuadEdge::makeEdge(bool loop) {
+Edge::Ptr QuadEdge::makeEdge(bool loop) {
 
 	QuadEdge::Ptr qedge(new QuadEdge);
 

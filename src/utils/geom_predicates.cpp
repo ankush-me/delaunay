@@ -19,15 +19,18 @@ double orient2d (Vector2f pa, Vector2f pb, Vector2f pc) {
 	return (double) orient2d(v1.data(), v2.data(), v3.data());
 }
 
-double incircle (Eigen::Vector2d pa, Eigen::Vector2d pb, Eigen::Vector2d pc) {
-	return incircle(pa.data(), pb.data(), pc.data());
+double incircle (Eigen::Vector2d pa, Eigen::Vector2d pb,
+		           Eigen::Vector2d pc, Eigen::Vector2d pd) {
+	return incircle(pa.data(), pb.data(), pc.data(), pd.data());
 }
 
-double incircle (Eigen::Vector2f pa, Eigen::Vector2f pb, Eigen::Vector2f pc) {
+double incircle (Eigen::Vector2f pa, Eigen::Vector2f pb,
+		           Eigen::Vector2f pc, Eigen::Vector2f pd) {
 	Vector2d v1((double) pa[0], (double) pa[1]);
 	Vector2d v2((double) pb[0], (double) pb[1]);
 	Vector2d v3((double) pc[0], (double) pc[1]);
-	return incircle(v1.data(), v2.data(), v3.data());
+	Vector2d v4((double) pd[0], (double) pd[1]);
+	return incircle(v1.data(), v2.data(), v3.data(), v4.data());
 }
 
 bool ccw(Vector2d pa, Vector2d pb, Vector2d pc) {

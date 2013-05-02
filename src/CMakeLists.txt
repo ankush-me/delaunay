@@ -9,4 +9,5 @@ link_directories(
 )
 
 add_subdirectory(utils)
+add_subdirectory(qedge)
 add_subdirectory(test)

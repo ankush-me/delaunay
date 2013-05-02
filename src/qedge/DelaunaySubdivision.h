@@ -26,14 +26,15 @@ enum CutsType {
 
 class DelaunaySubdivision {
 
-	/** List of all the quad-edges in the subdivision. */
-	boost::unordered_set<QuadEdge::Ptr> qedges;
-
 	/** The type of division used in divide-conquer algo. */
 	const CutsType location;
 
 public:
 	typedef boost::shared_ptr<DelaunaySubdivision> Ptr;
+
+	/** List of all the quad-edges in the subdivision. */
+	boost::unordered_set<QuadEdge::Ptr> qedges;
+
 	DelaunaySubdivision(CutsType t);
 
 	/** Adds a new edge connecting the destination of e1 to the origin of e2.
