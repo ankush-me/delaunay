@@ -7,6 +7,33 @@
 #include <iostream>
 #include <algorithm>
 
+/** Gives the positive modulus. */
+template<typename V>
+V modL(const V& a, const V& b) {
+	return (a % b + b) % b;
+}
+
+// compare points based on i_th coordinate. Ties broken using subsequent coordinates.
+struct CoordinateComparator : std::binary_function <Eigen::VectorXd, Eigen::VectorXd, bool> {
+	// dimensions of the vector
+	const int d;
+
+	// the coordinate index based on which two points should be compared
+	const int i;
+	CoordinateComparator(int _d, int _i) : d(_d), i(modL(_i,d)) {}
+
+	bool operator() (const Eigen::VectorXd &v1, const Eigen::VectorXd &v2) const {
+		int c = i;
+		do {
+			if (v1[c] == v2[c])
+				c = modL(c+1,d);
+			else
+				return (v1[c] < v2[c]);
+		} while (c != i);
+		return false;
+	}
+};
+
 
 // compare points lexico-graphically
 struct Comparator : std::binary_function <Eigen::VectorXd, Eigen::VectorXd, bool> {

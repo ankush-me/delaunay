@@ -77,4 +77,3 @@ bool valid(Edge::Ptr e, Edge::Ptr basel);
 bool incircle(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c, Vector2dPtr d);
 
 #endif
-
