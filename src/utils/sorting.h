@@ -17,19 +17,10 @@ struct PtrCoordinateComparator : std::binary_function
 	const int d;
 	// the coordinate index based on which two points should be compared
 	const int i;
-	PtrCoordinateComparator(int _d, int _i) : d(_d), i(mod(_i,d)) {}
+	PtrCoordinateComparator(int _d, int _i);
 
 	bool operator() (const boost::shared_ptr<Eigen::Vector2d> &v1,
-			const boost::shared_ptr<Eigen::Vector2d> &v2) const {
-		int c = i;
-		do {
-			if ((*v1)[c] == (*v2)[c])
-				c = mod(c+1,d);
-			else
-				return ((*v1)[c] < (*v2)[c]);
-		} while (c != i);
-		return false;
-	}
+			const boost::shared_ptr<Eigen::Vector2d> &v2) const ;
 };
 
 
@@ -40,77 +31,34 @@ struct CoordinateComparator : std::binary_function <Eigen::VectorXd, Eigen::Vect
 
 	// the coordinate index based on which two points should be compared
 	const int i;
-	CoordinateComparator(int _d, int _i) : d(_d), i(mod(_i,d)) {}
+	CoordinateComparator(int _d, int _i);
 
-	bool operator() (const Eigen::VectorXd &v1, const Eigen::VectorXd &v2) const {
-		int c = i;
-		do {
-			if (v1[c] == v2[c])
-				c = mod(c+1,d);
-			else
-				return (v1[c] < v2[c]);
-		} while (c != i);
-		return false;
-	}
+	bool operator() (const Eigen::VectorXd &v1, const Eigen::VectorXd &v2) const;
 };
 
 
 // compare points lexico-graphically
 struct Comparator : std::binary_function <Eigen::VectorXd, Eigen::VectorXd, bool> {
 	int d; // dimensions of the vector
-	Comparator(int _d) : d(_d) {}
+	Comparator(int _d);
 
-	bool operator() (const Eigen::VectorXd &v1, const Eigen::VectorXd &v2) const {
-		int i = 0;
-		while(i < d && v1[i] == v2[i]) {i++;}
-		return (i==d)? false :  v1[i] < v2[i];
-	}
+	bool operator() (const Eigen::VectorXd &v1, const Eigen::VectorXd &v2) const ;
 };
 
 struct EqComparator : std::binary_function <Eigen::VectorXd, Eigen::VectorXd, bool> {
 	int d; // dimensions of the vector
-	EqComparator(int _d) : d(_d) {}
+	EqComparator(int _d);
 
-	bool operator() (const Eigen::VectorXd &v1, const Eigen::VectorXd &v2) const {
-		int i = 0;
-		while(i < d && v1[i] == v2[i]) {i++;}
-		return (i==d);
-	}
+	bool operator() (const Eigen::VectorXd &v1, const Eigen::VectorXd &v2) const;
 };
 
-/** Templatized comparator for lexicographic less-than test.
- *  The comparisons are made of the indices based on the points stores in PTS.*/
-template <typename T, typename T_allocator>
-struct IndexedComparator : std::binary_function <int, int, bool> {
-private:
-
-public:
-	int d; // dimensions of the vector
-	std::vector<T, T_allocator> * pts;
-	int N;
-
-	IndexedComparator(int _d, std::vector<T, T_allocator> *_pts) : d(_d), pts(_pts), N(_pts->size()) {}
-
-	bool operator() (const int &i1, const int &i2) const {
-		int i = 0;
-		while(i < d && pts->at(i1)[i] == pts->at(i2)[i]) {i++;}
-		bool res = (i==d)? false : pts->at(i1)[i] < pts->at(i2)[i];
-		return res;
-	}
-};
 
 
 /* Sorts the pts b/w [start, end] (inclusive) indices,
  * based on COMP_I coordinate of the points, breaking ties
  * by circularly subsequent coordinates. */
 void lexicoSort(std::vector<boost::shared_ptr<Eigen::Vector2d> > & pts,
-		int start, int end,  int comp_coord=0) {
-	PtrCoordinateComparator comp(2, comp_coord);
-	int n = pts.size();
-	if (n != 0)
-		sort(pts.begin()+start, pts.begin()+end+1, comp);
-}
-
+		int start, int end,  int comp_coord=0);
 
 /** Partially sorts an array of points in [start, end] (inclusive)
  *  such that [start,mid] < [mid,end].
@@ -121,14 +69,7 @@ void lexicoSort(std::vector<boost::shared_ptr<Eigen::Vector2d> > & pts,
  *   - Uses nth_element function of the standard library.
  *   - Mutates the vector b/w [start, end]. */
 int median(std::vector<boost::shared_ptr<Eigen::Vector2d> > & pts,
-		int start, int end, int comp_coord=0) {
-	if (start > end) return -1;
-	PtrCoordinateComparator comp(2, comp_coord);
-	const int mid = start + (end-start)/2;
-	std::nth_element(pts.begin()+start, pts.begin()+mid, pts.begin()+end+1, comp);
-	return mid;
-}
-
+		int start, int end, int comp_coord=0);
 
 
 /** Sort a vector of points lexicographically. In-place. */

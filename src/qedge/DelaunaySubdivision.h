@@ -9,7 +9,10 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_set.hpp>
+
 #include "utils/geom_predicates.h"
+
+
 #include <utility>
 #include "QuadEdge.h"
 #include "Edge.h"
@@ -35,6 +38,15 @@ class DelaunaySubdivision {
 	/** Handles base-cases of delaunay triangulation; i.e. when |S| is 2 or 3.*/
 	std::pair<Edge::Ptr, Edge::Ptr> doBaseCases(std::vector<Vector2dPtr> &pts, const int start, const int end);
 
+	/** Rotate the handles.
+	 *  First handle  (this is the LEFT handle) goes DOWN,
+	 *  Second handle (this is the RIGHT handle) goes UP. */
+	std::pair<Edge::Ptr, Edge::Ptr> rotate_handles(std::pair<Edge::Ptr, Edge::Ptr> handles);
+
+	/** Rotate the handles.
+	 *  First handle  (this is the TOP handle)    goes RIGHT,
+	 *  Second handle (this is the BOTTOM handle) goes LEFT. */
+	std::pair<Edge::Ptr, Edge::Ptr> unrotate_handles(std::pair<Edge::Ptr, Edge::Ptr> handles);
 
 	/** Merges triangulations, given the appropriate handles of their convex hulls.
 	 *  if the triangulations are LEFT, RIGHT, then:
@@ -46,7 +58,7 @@ class DelaunaySubdivision {
 	 *  Returns the outer handles.*/
 	std::pair<Edge::Ptr, Edge::Ptr>
 	mergeTriangulations(std::pair<Edge::Ptr, Edge::Ptr> first_hs,
-			               std::pair<Edge::Ptr, Edge::Ptr> second_hs);
+			std::pair<Edge::Ptr, Edge::Ptr> second_hs);
 
 public:
 	typedef boost::shared_ptr<DelaunaySubdivision> Ptr;
@@ -88,7 +100,7 @@ public:
 	 *  end   : the end index   of PTS
 	 *  axis  : the axis along which the point-set needs to be cut. */
 	std::pair<Edge::Ptr, Edge::Ptr>
-	divideConquerAlternatingCuts(std::vector<Vector2dPtr> &pts, int start, int end, int axis=0);
+	divideConquerAlternatingCuts(std::vector<Vector2dPtr> &pts, int start, int end, int axis=1);
 };
 
 // wrapper for CCW checks for pointer to points.

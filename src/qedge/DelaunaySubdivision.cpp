@@ -4,6 +4,7 @@
  *  Guibas & Stolfi, pages 103 and 104.*/
 
 #include "DelaunaySubdivision.h"
+#include "utils/sorting.h"
 
 using namespace Eigen;
 using namespace std;
@@ -187,13 +188,52 @@ DelaunaySubdivision::divideConquerAlternatingCuts(std::vector<Vector2dPtr> &pts,
 		pair<Edge::Ptr, Edge::Ptr> first_handles  = divideConquerAlternatingCuts(pts, start, mid, mod(axis+1,2));
 		pair<Edge::Ptr, Edge::Ptr> second_handles = divideConquerAlternatingCuts(pts, mid+1, end, mod(axis+1,2));
 
-		if (axis==0) { //horizontal cut : rotate handles
+		if (axis==1) { //horizontal cut : rotate handles
 			first_handles  = rotate_handles(first_handles);
 			second_handles = rotate_handles(second_handles);
 		}
 		pair<Edge::Ptr, Edge::Ptr> outer_handles  = mergeTriangulations (first_handles, second_handles);
-		return ((axis==0)? unrotate_handles(outer_handles) : outer_handles);
+		return ((axis==1)? unrotate_handles(outer_handles) : outer_handles);
 	}
+}
+
+
+/** Rotate the handles.
+ *  First handle  (this is the LEFT handle) goes DOWN,
+ *  Second handle (this is the RIGHT handle) goes UP.*/
+std::pair<Edge::Ptr, Edge::Ptr>
+DelaunaySubdivision::rotate_handles(std::pair<Edge::Ptr, Edge::Ptr> handles) {
+	Edge::Ptr lh = handles.first;
+	Edge::Ptr rh = handles.second;
+
+	PtrCoordinateComparator y_comparator(2,1);
+
+	while(y_comparator(lh->dest(),lh->org()))
+		lh = lh->Rprev();
+
+	while(y_comparator(rh->dest(),rh->org()))
+		rh = rh->Lnext();
+
+	return make_pair(lh, rh);
+}
+
+/** Rotate the handles.
+ *  First handle (this is the BOTTOM handle) goes LEFT,
+ *  Second handle  (this is the TOP handle) goes RIGHT. */
+std::pair<Edge::Ptr, Edge::Ptr>
+DelaunaySubdivision::unrotate_handles(std::pair<Edge::Ptr, Edge::Ptr> handles) {
+	Edge::Ptr bh = handles.first;
+	Edge::Ptr th = handles.second;
+
+	PtrCoordinateComparator x_comparator(2,0);
+
+	while(x_comparator(bh->org(), bh->dest()))
+		bh = bh->Rnext();
+
+	while(x_comparator(th->org(), th->dest()))
+		th = th->Lprev();
+
+	return make_pair(bh, th);
 }
 
 /** Merges triangulations, given the appropriate handles of their convex hulls.
