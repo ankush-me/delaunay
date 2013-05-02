@@ -1,7 +1,9 @@
 #include "environment.h"
 
-OSGInstance::OSGInstance() {
-    //root = new osg::Group;               // does not do shadow magic
+OSGInstance::OSGInstance(bool shadows) {
+	if (!shadows) {
+    root = new osg::Group;               // does not do shadow magic
+	} else {
 	osg::ref_ptr<osgShadow::ShadowedScene> shadow_root = new osgShadow::ShadowedScene;   // does do shadow magic
     shadow_root->setReceivesShadowTraversalMask(RECEIVES_SHADOW_MASK);
     shadow_root->setCastsShadowTraversalMask(CASTS_SHADOW_MASK);
@@ -12,6 +14,7 @@ OSGInstance::OSGInstance() {
     sm->setTextureSize(osg::Vec2s(mapres,mapres));
 
     root = shadow_root;
+	}
     osg::setNotifyLevel(osg::FATAL);
 }
 

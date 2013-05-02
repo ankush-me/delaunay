@@ -27,7 +27,7 @@ struct OSGInstance {
     osg::ref_ptr<osg::Group> root;
     osg::ref_ptr<osgShadow::MinimalCullBoundsShadowMap> sm;
 
-    OSGInstance();
+    OSGInstance(bool shadows=false);
 };
 
 
