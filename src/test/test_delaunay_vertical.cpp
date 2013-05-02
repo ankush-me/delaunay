@@ -29,16 +29,21 @@ vector<Vector2dPtr> toPtrVector(const vector2d &pts) {
 	return ret;
 }
 
-void doDelaunay(vector2d &pts) {
+// compute delaunay triangulation and display it in the viewer.
+void doDelaunay(vector2d &pts, bool verbose=false) {
 	CustomScene s;
 	Eigen::Affine3f tf = Eigen::Affine3f::Identity();
 	util::drawAxes(tf, 0.5, s.env);
 
 	lexicoSort(pts);
-	for (int i=0; i < pts.size(); i++)
-		cout << pts[i].transpose()<<endl;
-	cout << "sorted points."<<endl;
+
+	if (verbose) {
+		for (int i=0; i < pts.size(); i++)
+			cout << pts[i].transpose()<<endl;
+		cout << "sorted points."<<endl;
+	}
 	vector<Vector2dPtr> ptrPTS = toPtrVector(pts);
+
 	DelaunaySubdivision subD(VERTICAL_CUTS);
 	subD.divideConquerVerticalCuts(ptrPTS, 0, pts.size()-1);
 
@@ -58,14 +63,21 @@ void doDelaunay(vector2d &pts) {
 
 
 void testNODEFile(const int fidx = 0) {
-	string files[] = {"spiral.node",
-			"box.node",
-			"grid.node",
-			"flag.node"};
+	string files[] = {"4.node",
+			          "box.node",
+			          "flag.node",
+			          "ladder.node",
+			          "tri.node",
+			          "633.node",
+			          "dots.node",
+			          "grid.node",
+			          "spiral.node",
+			          "ttimeu1000000.node"};
+
 	string fname = string(EXPAND (PROJECT_DATA_DIR)) + "/" +  files[fidx];
 	vector2d points;
 	readNodeFile(fname, points);
-	doDelaunay(points);
+	doDelaunay(points, true);
 }
 
 
@@ -74,12 +86,10 @@ void testRand(const int N=10) {
 
 	MatrixXd randm = MatrixXd::Random(N,2);
 	vector2d pts(N);
-
 	for (int i = 0 ; i < N; i+=1)
 		pts[i] = randm.row(i);
 
 	doDelaunay(pts);
-
 }
 
 
@@ -89,6 +99,6 @@ int main (int argc, char* argv[]) {
 		N = atoi(argv[1]);
 	}
 	//testRand(N);
-	testNODEFile(0);
+	testNODEFile(1);
 	return 0;
 }
