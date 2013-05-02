@@ -9,12 +9,12 @@ using namespace Eigen;
 using namespace std;
 
 /** is the point x to the right of the edge e.*/
-bool rightOf (Vector2d::Ptr x, Edge::Ptr e) {
+bool rightOf (Vector2dPtr x, Edge::Ptr e) {
 	return ccw(*x,*(e->dest()), *(e->org()));
 }
 
 /** is the point x to the left of the edge e.*/
-bool leftOf(Vector2d::Ptr x, Edge::Ptr e) {
+bool leftOf(Vector2dPtr x, Edge::Ptr e) {
 	return ccw(*x, *(e->org()), *(e->dest()));
 }
 

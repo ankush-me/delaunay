@@ -39,8 +39,8 @@ public:
 	PlotPoints(float size=5);
 	void setPoints(const osg::ref_ptr<osg::Vec3Array>& osgPts, const osg::ref_ptr<osg::Vec4Array>& osgCols);
 	void setPoints(const osg::ref_ptr<osg::Vec3Array>& osgPts);
-	void setPoints(const vector3 &pts, const vector4 &cols);
-	void setPoints(const vector3 &pts);
+	void setPoints(const vector3f &pts, const vector4f &cols);
+	void setPoints(const vector3f &pts);
 	void forceTransparency(float a);
 };
 
@@ -50,8 +50,8 @@ class PlotLines : public PlotObject {
 public:
 	typedef boost::shared_ptr<PlotLines> Ptr;
 	PlotLines(float width=5);
-	void setPoints(const vector3 &pts, const vector4 &cols);
-	void setPoints(const vector3 &pts);
+	void setPoints(const vector3f &pts, const vector4f &cols);
+	void setPoints(const vector3f &pts);
 	void setPoints(const osg::ref_ptr<osg::Vec3Array>& pts, const osg::ref_ptr<osg::Vec4Array>& cols);
 	void setPoints(const osg::ref_ptr<osg::Vec3Array>& pts);
 	void forceTransparency(float a);
@@ -127,8 +127,8 @@ public:
 	osg::ref_ptr<osg::Geometry> m_geom;
 
 	PlotCurve(float width=5);
-	void setPoints(const vector3 &pts, const vector4 &cols);
-	void setPoints(const vector3 &pts);
+	void setPoints(const vector3f &pts, const vector4f &cols);
+	void setPoints(const vector3f &pts);
 	void setPoints(const osg::ref_ptr<osg::Vec3Array>& pts, const osg::ref_ptr<osg::Vec4Array>& cols);
 	void setPoints(const osg::ref_ptr<osg::Vec3Array>& pts);
 };
@@ -167,6 +167,6 @@ public:
 	// adds a polygon. Assumes that the vertices are given in counter-clockwise manner.
 	void addPolygon(const osg::ref_ptr<osg::Vec3Array>& vertices, const osg::ref_ptr<osg::Vec4Array>& colors);
 	void addPolygon(const osg::ref_ptr<osg::Vec3Array>& vertices);
-	void addPolygon(const vector3 &vertices, const vector4 &colors);
-	void addPolygon(const vector3 &vertices);
+	void addPolygon(const vector3f &vertices, const vector4f &colors);
+	void addPolygon(const vector3f &vertices);
 };

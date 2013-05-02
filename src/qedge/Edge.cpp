@@ -14,17 +14,17 @@
 QuadEdge::Ptr Edge::qEdge() {return qedge;}
 
 /** Return the origin/ destination of this edge.*/
-Vector2d::Ptr Edge::org() {
+Vector2dPtr Edge::org() {
 	return origin;
 }
-Vector2d::Ptr Edge::dest() {
+Vector2dPtr Edge::dest() {
 	return Sym()->org();
 }
 /** Set the origin/ destination of this edge.*/
-void Edge::setOrg(Vector2d::Ptr pt) {
+void Edge::setOrg(Vector2dPtr pt) {
 	org = pt;
 }
-void Edge::setDest(Vector2d::Ptr pt) {
+void Edge::setDest(Vector2dPtr pt) {
 	Sym()->setOrg(pt);
 }
 

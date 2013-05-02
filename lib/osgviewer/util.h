@@ -29,8 +29,8 @@ namespace util {
   ///////////////// CONVERSIONS ////////////////////////////
   inline osg::Vec3d toOSGVector(const Eigen::Vector3f &v) { return osg::Vec3d(v.x(), v.y(), v.z()); }
   inline Eigen::Vector3f toEigenVector(const osg::Vec3d &v) { return Eigen::Vector3f(v.x(), v.y(), v.z()); }
-  osg::ref_ptr<osg::Vec3Array> toVec3Array(const vector3&);
-  osg::ref_ptr<osg::Vec4Array> toVec4Array(const vector4&);
+  osg::ref_ptr<osg::Vec3Array> toVec3Array(const vector3f&);
+  osg::ref_ptr<osg::Vec4Array> toVec4Array(const vector4f&);
   osg::ref_ptr<osg::Vec3Array> toVec3Array(const Eigen::MatrixXf& in);
   osg::ref_ptr<osg::Vec4Array> toVec4Array(const Eigen::MatrixXf& in);
 
@@ -60,12 +60,12 @@ namespace util {
   Environment::Ptr getGlobalEnv();
 
   std::vector<float> toVec(const Eigen::VectorXf& in);
-  Eigen::MatrixXf toEigenMatrix(const vector3& in);
+  Eigen::MatrixXf toEigenMatrix(const vector3f& in);
 
-  void drawSpheres(vector3 points, Eigen::Vector3f color, float alpha, float radius, Environment::Ptr env);
+  void drawSpheres(vector3f points, Eigen::Vector3f color, float alpha, float radius, Environment::Ptr env);
   void drawSpheres(Eigen::Vector3f point, Eigen::Vector3f color, float alpha, float radius, Environment::Ptr env);
-  void drawLines(vector3 points0, vector3 points1, Eigen::Vector3f color, float alpha, Environment::Ptr env);
-  void drawPoly(vector3 points, Eigen::Vector3f color, float alpha, Environment::Ptr env);
+  void drawLines(vector3f points0, vector3f points1, Eigen::Vector3f color, float alpha, Environment::Ptr env);
+  void drawPoly(vector3f points, Eigen::Vector3f color, float alpha, Environment::Ptr env);
   void drawAxes(Eigen::Affine3f transform, float size, Environment::Ptr env);
 }
 

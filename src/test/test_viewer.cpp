@@ -13,8 +13,8 @@ using namespace std;
 class CustomScene : public Scene{};
 
 
-vector3 to3d(const vector2 &pts) {
-	vector3 pts3d(pts.size());
+vector3f to3d(const vector2f &pts) {
+	vector3f pts3d(pts.size());
 	for(int i =0 ; i < pts.size(); i++ ) {
 		Vector2f pt = pts[i];
 		pts3d[i] = Vector3f(pt.x(), pt.y(), 0);
@@ -34,7 +34,7 @@ int main (int argc, char* argv[]) {
 	PlotPolygons::Ptr polys(new PlotPolygons);
 	s.env->add(polys);
 
-	vector3 verts;
+	vector3f verts;
 	verts.push_back(Vector3f(1,0,0));
 	verts.push_back(Vector3f(0,1,0));
 	verts.push_back(Vector3f(0,0,1));

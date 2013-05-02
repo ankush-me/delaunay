@@ -12,12 +12,9 @@
 
 
 // Pointers to Eigen points.
-namespace Vector2d {
-	typedef boost::shared_ptr<Eigen::Vector2d> Ptr;
-}
-namespace Vector2f {
-	typedef boost::shared_ptr<Eigen::Vector2f> Ptr;
-}
+typedef boost::shared_ptr<Eigen::Vector2d> Vector2dPtr;
+typedef boost::shared_ptr<Eigen::Vector2f> Vector2fPtr;
+
 
 
 class Data {

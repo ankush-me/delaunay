@@ -72,10 +72,10 @@ void PlotPoints::forceTransparency(float a) {
   }
 }
 
-void PlotPoints::setPoints(const vector3& pts, const vector4& cols) {
+void PlotPoints::setPoints(const vector3f & pts, const vector4f & cols) {
   setPoints(toVec3Array(pts), toVec4Array(cols));
 }
-void PlotPoints::setPoints(const vector3& pts) {
+void PlotPoints::setPoints(const vector3f & pts) {
   setPoints(toVec3Array(pts));
 }
 
@@ -102,11 +102,11 @@ PlotLines::PlotLines(float width) {
   m_geode->setStateSet(stateset);
 }
 
-void PlotLines::setPoints(const vector3& pts, const vector4& cols) {
+void PlotLines::setPoints(const vector3f& pts, const vector4f& cols) {
   setPoints(toVec3Array(pts),  toVec4Array(cols));
 }
 
-void PlotLines::setPoints(const vector3& pts) {
+void PlotLines::setPoints(const vector3f & pts) {
   osg::ref_ptr<osg::Vec4Array> osgCols = new osg::Vec4Array(pts.size());
   BOOST_FOREACH(osg::Vec4& col, *osgCols) col = m_defaultColor;
   setPoints(toVec3Array(pts),  osgCols);
@@ -262,11 +262,11 @@ PlotCurve::PlotCurve(float width) : osg::Geode(), m_defaultColor(1,0,0,1) {
   setStateSet(stateset);
 }
 
-void PlotCurve::setPoints(const vector3& pts, const vector4& cols) {
+void PlotCurve::setPoints(const vector3f & pts, const vector4f & cols) {
   setPoints(toVec3Array(pts),  toVec4Array(cols));
 }
 
-void PlotCurve::setPoints(const vector3& pts) {
+void PlotCurve::setPoints(const vector3f & pts) {
   osg::ref_ptr<osg::Vec4Array> osgCols = new osg::Vec4Array(pts.size());
   BOOST_FOREACH(osg::Vec4& col, *osgCols) col = m_defaultColor;
   setPoints(toVec3Array(pts),  osgCols);
@@ -322,10 +322,10 @@ void PlotPolygons::addPolygon(const osg::ref_ptr<osg::Vec3Array>& vertices) {
 }
 
 
-void PlotPolygons::addPolygon(const vector3& pts, const vector4& cols) {
+void PlotPolygons::addPolygon(const vector3f& pts, const vector4f& cols) {
   addPolygon(toVec3Array(pts), toVec4Array(cols));
 }
 
-void PlotPolygons::addPolygon(const vector3& pts) {
+void PlotPolygons::addPolygon(const vector3f& pts) {
   addPolygon(toVec3Array(pts));
 }

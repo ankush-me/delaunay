@@ -3,6 +3,7 @@
 #include <vector>
 #include <limits>
 
+#include "qedge/Data.h"
 
 using namespace Eigen;
 using namespace std;
@@ -71,23 +72,23 @@ public:
 
 };
 int main (int argc, char* argv[]) {
-	using namespace Test;
 
-	Data::Ptr       i(new IntData(1));
-	Data::Ptr       v(new Vector2Data(Vector2f(1,2))  );
 
-	Edge::Ptr e1(new Edge(i));
-	Edge::Ptr e2(new Edge(v));
+	Test::Data::Ptr       i(new Test::IntData(1));
+	Test::Data::Ptr       v(new Test::Vector2Data(Vector2f(1,2))  );
 
-	QuadEdge::Ptr qe(new QuadEdge);
+	Test::Edge::Ptr e1(new Test::Edge(i));
+	Test::Edge::Ptr e2(new Test::Edge(v));
+
+	Test::QuadEdge::Ptr qe(new Test::QuadEdge);
 	qe->edges.push_back(e1);
 	qe->edges.push_back(e2);
 
 	for(int i=0; i < qe->edges.size(); i++)
 		qe->edges[i]->print();
 
-	S temp(1);
-	cout << "Return : "<<S::ret(temp)<<endl;
+	Test::S temp(1);
+	cout << "Return : "<<Test::S::ret(temp)<<endl;
 
 	float inf = numeric_limits<float>::infinity();
 	float Ninf = numeric_limits<float>::infinity();
@@ -96,6 +97,9 @@ int main (int argc, char* argv[]) {
 	cout << "n inf : "<<Ninf<<endl;
 	cout << "inf/Ninf : "<<(inf/Ninf)<<endl;
 
+
+	Vector2dPtr ptr(new Vector2d(1,2));
+	cout << "Ptr check : "<<ptr->transpose()<<endl;
 
 	return 0;
 

@@ -2246,7 +2246,7 @@ REAL orient3d(REAL *pa, REAL *pb, REAL *pc, REAL *pd)
 /*                                                                           */
 /*  incirclefast()   Approximate 2D incircle test.  Nonrobust.               */
 /*  incircleexact()   Exact 2D incircle test.  Robust.                       */
-/*  incircleslow()   Another exact 2D incircle test.  Robust.                */
+/*  incircleslow()   Another exact 2D incircle test.  Robust.       	         */
 /*  incircle()   Adaptive exact 2D incircle test.  Robust.                   */
 /*                                                                           */
 /*               Return a positive value if the point pd lies inside the     */

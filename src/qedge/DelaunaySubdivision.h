@@ -58,10 +58,10 @@ public:
 
 // see page G&S page 113 for the following functions
 /** is the point x to the right of the edge e.*/
-bool rightOf(Vector2d::Ptr x, Edge::Ptr e);
+bool rightOf(Vector2dPtr x, Edge::Ptr e);
 
 /** is the point x to the left of the edge e.*/
-bool leftOf(Vector2d::Ptr x, Edge::Ptr e);
+bool leftOf(Vector2dPtr x, Edge::Ptr e);
 
 /** An edge e is valid iff, its destination lies to right the edge basel.*/
 bool valid(Edge::Ptr e, Edge::Ptr basel);

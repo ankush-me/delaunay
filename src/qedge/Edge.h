@@ -26,7 +26,7 @@ private:
 
 	/** Origin of the edge.
 	 * 	Destination is stored in the symmetric edge.*/
-	Vector2d::Ptr origin;
+	Vector2dPtr origin;
 
 	// generic data container
 	Data::Ptr     data;
@@ -45,10 +45,10 @@ public:
 	QuadEdge::Ptr qEdge();
 
 	/** Operations on the origin/ destination of this edge.*/
-	Vector2d::Ptr org();
-	Vector2d::Ptr dest();
-	void setOrg(Vector2d::Ptr pt);
-	void setDest(Vector2d::Ptr pt);
+	Vector2dPtr org();
+	Vector2dPtr dest();
+	void setOrg(Vector2dPtr pt);
+	void setDest(Vector2dPtr pt);
 
 	/** This is a topological operator which joins/ separates the
 	 *  vertex/ face chains defined at edges e1 and e2.
