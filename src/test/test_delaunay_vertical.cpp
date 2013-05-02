@@ -57,7 +57,7 @@ void doDelaunay(vector2d &pts) {
 }
 
 
-void testELEFile(const int fidx = 0) {
+void testNODEFile(const int fidx = 0) {
 	string files[] = {"spiral.node",
 			"box.node",
 			"grid.node",
@@ -89,6 +89,6 @@ int main (int argc, char* argv[]) {
 		N = atoi(argv[1]);
 	}
 	//testRand(N);
-	testELEFile(0);
+	testNODEFile(0);
 	return 0;
 }
