@@ -91,13 +91,16 @@ std::pair<Edge::Ptr, Edge::Ptr>
 DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> pts, int start, int end) {
 
 	// check the range of the indices.
-	assert (("Delaunay Div-&-Conquer : Indices out of range.", 0<=start && start < pts.size()));
-	assert (("Delaunay Div-&-Conquer : Indices out of range.", start <= end && 0<=end && end<pts.size()));
+	assert (("Delaunay Div-&-Conquer : Indices out of range.",
+			0<=start && start < pts.size()));
+	assert (("Delaunay Div-&-Conquer : Indices out of range.",
+			start <= end && 0<=end && end<pts.size()));
 
 	const int SIZE = end-start+1;
 
 	if (SIZE < 2) {
-		cout << " Divide and conquer expecting at least 2 points. Found "<<pts.size()<<" ."<<endl;
+		cout << " Divide and conquer expecting at least 2 points. Found "
+				<< pts.size() << " ." << endl;
 		throw(-1);
 	}
 
@@ -140,48 +143,68 @@ DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> pts, int star
 		const int mid = start + (end-start)/2;
 		pair<Edge::Ptr, Edge::Ptr> lhandles = divideConquerVerticalCuts(pts, start, mid);
 		pair<Edge::Ptr, Edge::Ptr> rhandles = divideConquerVerticalCuts(pts, mid+1, end);
-		Edge::Ptr ldo = lhandles.first; Edge::Ptr ldi = lhandles.second;
-		Edge::Ptr rdi = rhandles.first; Edge::Ptr rdo = rhandles.second;
 
-		// compute the lower common tangent of L and R.
-		while (true) {
-			if       (leftOf(rdi->org(), ldi))     ldi = ldi->Lnext();
-			else if (rightOf(ldi->org(), rdi))  	rdi = rdi->Rprev();
-			else break;
-		}
-
-		Edge::Ptr basel = connect(rdi->Sym(), ldi);
-		if (*(ldi->org()) == *(ldo->org())) 	ldo = basel->Sym();
-		if (*(rdi->org()) == *(rdo->org())) 	rdo = basel;
-
-		// merge the two triangulations
-		while (true)  {
-			Edge::Ptr lcand = basel->Sym()->Onext();
-			if (valid(lcand, basel)) {
-				while (incircle(basel->dest(), basel->org(), lcand->dest(), lcand->Onext()->dest())) {
-					lcand = lcand->Onext();
-					deleteEdge(lcand->Oprev());
-				}
-			}
-
-			Edge::Ptr rcand = basel->Oprev();
-			if (valid(rcand, basel)) {
-				while (incircle(basel->dest(), basel->org(), rcand->dest(), rcand->Oprev()->dest())) {
-					rcand = rcand->Oprev();
-					deleteEdge(rcand->Onext());
-				}
-			}
-
-			const bool lvalid = valid(lcand, basel);
-			const bool rvalid = valid(rcand, basel);
-
-			// we have reached the upper common tangent. This exits out of the merge loop.
-			if (!lvalid && !rvalid) break;
-
-			// check which side to connect to.
-			const bool check =  (!lvalid || (rvalid && incircle(lcand->dest(), lcand->org(), rcand->org(), rcand->dest())));
-			basel = (check)? connect(rcand, basel->Sym()) : connect(basel->Sym(), lcand->Sym());
-		}
-		return make_pair(ldo, rdo);
+		return mergeTriangulations (lhandles, rhandles);
 	}
+}
+
+
+/** Merges triangulations, given the appropriate handles of their convex hulls.
+ *  if the triangulations are LEFT, RIGHT, then:
+ *			handles correspond to lexicomin and max vertices.
+ *
+ *	if the triangulations are TOP, BOTTOM, then:
+ *			handles should correspond to topmost, bottom-most points.
+ *          (i.e. points in lexico-order but in (y,x) comparison order).
+ *
+ *  Returns the outer handles.*/
+std::pair<Edge::Ptr, Edge::Ptr>
+DelaunaySubdivision::mergeTriangulations (std::pair<Edge::Ptr, Edge::Ptr> first_handles,
+		std::pair<Edge::Ptr, Edge::Ptr> second_handles) {
+
+	Edge::Ptr ldo = first_handles.first; Edge::Ptr ldi = first_handles.second;
+	Edge::Ptr rdi = second_handles.first; Edge::Ptr rdo = second_handles.second;
+
+	// compute the lower common tangent of L and R.
+	while (true) {
+		if       (leftOf(rdi->org(), ldi))     ldi = ldi->Lnext();
+		else if (rightOf(ldi->org(), rdi))  	rdi = rdi->Rprev();
+		else break;
+	}
+
+	Edge::Ptr basel = connect(rdi->Sym(), ldi);
+	if (*(ldi->org()) == *(ldo->org())) 	ldo = basel->Sym();
+	if (*(rdi->org()) == *(rdo->org())) 	rdo = basel;
+
+	// merge the two triangulations
+	while (true)  {
+		Edge::Ptr lcand = basel->Sym()->Onext();
+		if (valid(lcand, basel)) {
+			while (incircle(basel->dest(), basel->org(),
+					lcand->dest(), lcand->Onext()->dest())) {
+				lcand = lcand->Onext();
+				deleteEdge(lcand->Oprev());
+			}
+		}
+
+		Edge::Ptr rcand = basel->Oprev();
+		if (valid(rcand, basel)) {
+			while (incircle(basel->dest(), basel->org(),
+					rcand->dest(), rcand->Oprev()->dest())) {
+				rcand = rcand->Oprev();
+				deleteEdge(rcand->Onext());
+			}
+		}
+
+		const bool lvalid = valid(lcand, basel);
+		const bool rvalid = valid(rcand, basel);
+
+		// we have reached the upper common tangent. This exits out of the merge loop.
+		if (!lvalid && !rvalid) break;
+
+		// check which side to connect to.
+		const bool check =  (!lvalid || (rvalid && incircle(lcand->dest(), lcand->org(), rcand->org(), rcand->dest())));
+		basel = (check)? connect(rcand, basel->Sym()) : connect(basel->Sym(), lcand->Sym());
+	}
+	return make_pair(ldo, rdo);
 }

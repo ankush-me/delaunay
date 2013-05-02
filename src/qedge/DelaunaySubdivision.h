@@ -48,6 +48,19 @@ public:
 	void swap(Edge::Ptr e);
 
 
+	/** Merges triangulations, given the appropriate handles of their convex hulls.
+	 *  if the triangulations are LEFT, RIGHT, then:
+	 *			handles correspond to lexicomin and max vertices.
+	 *	if the triangulations are TOP, BOTTOM, then:
+	 *			handles should correspond to topmost, bottom-most points.
+	 *          (i.e. points in lexico-order but in (y,x) comparison order).
+	 *
+	 *  Returns the outer handles.*/
+	std::pair<Edge::Ptr, Edge::Ptr>
+	mergeTriangulations(std::pair<Edge::Ptr, Edge::Ptr> first_hs,
+			               std::pair<Edge::Ptr, Edge::Ptr> second_hs);
+
+
 	/** Implements the G&S [pg. 114] divide-and-conquer algorithm
 	 *  for delaunay triangulation using VERTICAL CUTS.
 	 *
