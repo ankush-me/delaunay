@@ -78,9 +78,9 @@ void readNodeFile(const std::string &fname,
 							<< fname << ". Skipping."<< endl; break;}
 			}
 		}
+		inpfile.close();
 	}
 }
-
 
 void reportTriangle(Edge::Ptr e, DelaunaySubdivision* subD,
 		boost::unordered_set<Edge::Ptr> &marked,
@@ -119,8 +119,11 @@ void writeSubdivision(const std::string &fname, DelaunaySubdivision* subD) {
 			it != subD->qedges.end(); it++)
 		reportTriangle((*it)->edges[0]->Rot(), subD, marked, tris);
 
-	// print vertices
-	cout << "Found : "<<tris.size()<< " triangles.\n";
+	ofstream outfile;
+	outfile.open(fname.c_str(), ios::out);
+	outfile << tris.size()<<"\t"<<3<<"\t"<<0<<endl;
 	for (int t=0; t<tris.size(); t+=1)
-		cout << tris[t][0]<<" "<< tris[t][1] << " "<< tris[t][2]<<endl;
+		outfile <<t<<"\t"<<tris[t][0]<<"\t"<<tris[t][1]<<"\t"<<tris[t][2]<<endl;
+	outfile.close();
+	cout << "Written "<<fname<<endl;
 }

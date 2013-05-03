@@ -36,21 +36,30 @@ class DelaunaySubdivision {
 	// holds the vertices
 	std::vector<Vector2dPtr> points;
 
+
 	/** Does mundane checks on the range of the indices. */
 	void checkRange(const int start, const int end) const;
 
+
+
 	/** Handles base-cases of delaunay triangulation; i.e. when |S| is 2 or 3.*/
 	std::pair<Edge::Ptr, Edge::Ptr> doBaseCases(const int start, const int end);
+
+
 
 	/** Rotate the handles.
 	 *  First handle  (this is the LEFT handle) goes DOWN,
 	 *  Second handle (this is the RIGHT handle) goes UP. */
 	std::pair<Edge::Ptr, Edge::Ptr> rotate_handles(std::pair<Edge::Ptr, Edge::Ptr> handles);
 
+
+
 	/** Rotate the handles.
 	 *  First handle  (this is the TOP handle)    goes RIGHT,
 	 *  Second handle (this is the BOTTOM handle) goes LEFT. */
 	std::pair<Edge::Ptr, Edge::Ptr> unrotate_handles(std::pair<Edge::Ptr, Edge::Ptr> handles);
+
+
 
 	/** Merges triangulations, given the appropriate handles of their convex hulls.
 	 *  if the triangulations are LEFT, RIGHT, then:
@@ -64,15 +73,20 @@ class DelaunaySubdivision {
 	mergeTriangulations(std::pair<Edge::Ptr, Edge::Ptr> first_hs,
 			std::pair<Edge::Ptr, Edge::Ptr> second_hs);
 
+
 	/** Adds a new edge connecting the destination of e1 to the origin of e2.
 	 *  Returns the first primal edge of the newly added quad-edge.*/
 	Edge::Ptr connect(Edge::Ptr e1, Edge::Ptr e2);
 
+
 	/** Removes the edge E from the subdivision. From G&S [pg. 103]. */
 	void deleteEdge(Edge::Ptr e);
 
+
 	/** Flips the diagonal of the quadrilateral containing e. From G&S [pg. 104]. */
 	void swap(Edge::Ptr e); // NOT REQUIRED FOR DIVIDE-AND-CONQUER
+
+
 
 	/** Implements the G&S [pg. 114] divide-and-conquer algorithm
 	 *  for delaunay triangulation using VERTICAL CUTS.
@@ -84,6 +98,8 @@ class DelaunaySubdivision {
 	 *  end   : the end index   of PTS */
 	std::pair<Edge::Ptr, Edge::Ptr>
 	divideConquerVerticalCuts(int start, int end);
+
+
 
 	/** Adapted from the G&S [pg. 114] divide-and-conquer algorithm
 	 *  for delaunay triangulation using ALTERNATING CUTS.
@@ -97,6 +113,8 @@ class DelaunaySubdivision {
 	std::pair<Edge::Ptr, Edge::Ptr>
 	divideConquerAlternatingCuts(int start, int end, int axis=1);
 
+
+
 public:
 	typedef boost::shared_ptr<DelaunaySubdivision> Ptr;
 
@@ -107,7 +125,8 @@ public:
 
 	boost::unordered_map<Vector2dPtr, int> pt2index;
 
-	/** main interface function.*/
+	/** Main interface function.
+	 *  T specifies which algorithm to use.*/
 	void computeDelaunay(CutsType t=ALTERNATE_CUTS);
 
 	/** Writes this subdivision to file.*/

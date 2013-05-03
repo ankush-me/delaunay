@@ -48,9 +48,7 @@ DelaunaySubdivision::DelaunaySubdivision(string fname, string outname) : points(
 		exit(-1);
 	}
 
-	int slash_pos = fname.find_last_of("/");
-	out_prefix  = (outname =="xdefaultx")? fname.substr(slash_pos+1, fname.length()-slash_pos-6) : outname;
-
+	out_prefix  = (outname =="xdefaultx")? fname.substr(0, fname.length()-5) : outname;
 	readNodeFile(fname, points, pt2index);
 }
 
