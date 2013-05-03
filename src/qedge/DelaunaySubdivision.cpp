@@ -20,7 +20,7 @@ bool  ccw(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c) {
 bool incircle(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c, Vector2dPtr d) {
 	double val =  incircle(*a, *b, *c, *d);
 	//cout << "incircle :"<<val<<endl;
-	if (abs(val) < 1e-18) val = 0;
+	if (val < 1e-18) val = 0;
 	bool ret =  val > 0.0;
 	return ret;
 }
@@ -197,7 +197,6 @@ DelaunaySubdivision::divideConquerAlternatingCuts(int start, int end, int axis) 
 		// make recursive calls. Split the points into left and right
 		const int mid = median(points, start, end, axis);
 
-
 		pair<Edge::Ptr, Edge::Ptr> first_handles  = divideConquerAlternatingCuts(start, mid, mod(axis+1,2));
 		pair<Edge::Ptr, Edge::Ptr> second_handles = divideConquerAlternatingCuts(mid+1, end, mod(axis+1,2));
 
@@ -321,12 +320,5 @@ void DelaunaySubdivision::computeDelaunay(CutsType t) {
 /** Writes this subdivision to file.*/
 void DelaunaySubdivision::writeToFile() {
 	writeSubdivision(out_prefix+".ele", this);
-}
-
-
-
-
-void DelaunaySubdivision::drawEdges() {
-
 }
 

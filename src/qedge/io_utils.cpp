@@ -86,24 +86,25 @@ void reportTriangle(Edge::Ptr e, DelaunaySubdivision* subD,
 		boost::unordered_set<Edge::Ptr> &marked,
 		std::vector<std::vector<int> >  &tris) {
 	if (marked.find(e) == marked.end()) {// not marked
-		Edge::Ptr f = e;
-		vector<int> tri(3);
-		vector<Vector2dPtr> vertices(3);
+		if (e->Rnext()->Rnext()->Rnext() == e) {
 
-		int i = 0;
+			vector<int> tri(3);
+			vector<Vector2dPtr> vertices(3);
 
-		do {
-			marked.insert(f);
-			if (i < 3) {
-				tri[i] = subD->pt2index[f->RotInv()->org()];
-				vertices[i] = f->RotInv()->org();
+			tri[0] = subD->pt2index[e->org()];
+			vertices[0] = e->org();
+			tri[1] = subD->pt2index[e->Rnext()->org()];
+			vertices[1] = e->Rnext()->org();
+			tri[2] = subD->pt2index[e->Rnext()->Rnext()->org()];
+			vertices[2] = e->Rnext()->Rnext()->org();
+
+			if (ccw(vertices[0], vertices[1],vertices[2])) {
+				marked.insert(e);
+				marked.insert(e->Rnext());
+				marked.insert(e->Rnext()->Rnext());
+				tris.push_back(tri);
 			}
-			i += 1;
-			f = f->Onext();
-		} while (f != e);
-
-		if (i == 3 && ccw(vertices[0], vertices[1], vertices[2]))
-			tris.push_back(tri);
+		}
 	}
 }
 
@@ -116,8 +117,10 @@ void writeSubdivision(const std::string &fname, DelaunaySubdivision* subD) {
 	vector<vector<int> > tris;
 
 	for(boost::unordered_set<QuadEdge::Ptr>::iterator it = subD->qedges.begin();
-			it != subD->qedges.end(); it++)
-		reportTriangle((*it)->edges[0]->Rot(), subD, marked, tris);
+			it != subD->qedges.end(); it++) {
+		reportTriangle((*it)->edges[0], subD, marked, tris);
+		reportTriangle((*it)->edges[0]->Sym(), subD, marked, tris);
+	}
 
 	ofstream outfile;
 	outfile.open(fname.c_str(), ios::out);

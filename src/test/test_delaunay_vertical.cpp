@@ -180,7 +180,7 @@ void newTest(int fidx=0) {
 
 	string fname = string(EXPAND (PROJECT_DATA_DIR)) + "/" +  files[fidx];
 	DelaunaySubdivision subD(fname);
-	subD.computeDelaunay();
+	subD.computeDelaunay(VERTICAL_CUTS);
 	subD.writeToFile();
 
 
@@ -190,11 +190,14 @@ void newTest(int fidx=0) {
 	util::drawAxes(tf, 0.5, s.env);
 	vector3f pts0(subD.qedges.size()), pts1(subD.qedges.size());
 	int i = 0;
+
 	for(boost::unordered_set<QuadEdge::Ptr>::iterator it = subD.qedges.begin();
 			it != subD.qedges.end(); it++, i++) {
+
 		QuadEdge::Ptr q = *it;
 		Vector2dPtr org = q->edges[0]->org();
 		Vector2dPtr dst = q->edges[0]->dest();
+
 		pts0[i] = Vector3f((float)org->x(), (float) org->y(), 0.f);
 		pts1[i] = Vector3f((float)dst->x(), (float) dst->y(), 0.f);
 	}
