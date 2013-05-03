@@ -6,6 +6,7 @@
 #include "DelaunaySubdivision.h"
 #include "io_utils.h"
 #include "utils/sorting.h"
+#include <time.h>
 
 using namespace Eigen;
 using namespace std;
@@ -308,12 +309,21 @@ DelaunaySubdivision::mergeTriangulations (std::pair<Edge::Ptr, Edge::Ptr> first_
 
 
 /** Main interface function.*/
-void DelaunaySubdivision::computeDelaunay(CutsType t) {
+void DelaunaySubdivision::computeDelaunay(CutsType t, bool time) {
+	clock_t tim;
+	int f;
+	tim = clock();
+
 	if (t==VERTICAL_CUTS) {
 		lexicoSort(points, 0, points.size()-1);
 		divideConquerVerticalCuts(0, points.size()-1);
 	} else {
 		divideConquerAlternatingCuts(0, points.size()-1);
+	}
+
+	if (time) {
+		tim = clock() - tim;
+		cout <<">>> "<<((double)tim)/CLOCKS_PER_SEC<< " seconds to compute the triangulation.\n";
 	}
 }
 
@@ -321,4 +331,3 @@ void DelaunaySubdivision::computeDelaunay(CutsType t) {
 void DelaunaySubdivision::writeToFile() {
 	writeSubdivision(out_prefix+".ele", this);
 }
-

@@ -21,6 +21,7 @@
 using namespace Eigen;
 using namespace std;
 
+
 class CustomScene : public Scene{};
 
 vector<Vector2dPtr> toPtrVector(const vector2d &pts) {

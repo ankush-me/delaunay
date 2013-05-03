@@ -127,7 +127,7 @@ public:
 
 	/** Main interface function.
 	 *  T specifies which algorithm to use.*/
-	void computeDelaunay(CutsType t=ALTERNATE_CUTS);
+	void computeDelaunay(CutsType t=ALTERNATE_CUTS, bool time=false);
 
 	/** Writes this subdivision to file.*/
 	void writeToFile();

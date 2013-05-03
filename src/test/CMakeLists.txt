@@ -16,3 +16,8 @@ target_link_libraries(test_delaunay_vertical delaunay_tri utils qedge osgviewer)
 
 add_executable(alternate_sort alternate_sort.cpp)
 target_link_libraries(alternate_sort utils)
+
+
+
+add_executable(delaunay delaunayApp.cpp)
+target_link_libraries(delaunay delaunay_tri)
