@@ -111,7 +111,7 @@ void testRand(const int N=10) {
 
 
 	DelaunaySubdivision subD(fname);
-	subD.computeDelaunay(VERTICAL_CUTS);
+	subD.computeDelaunay(ALTERNATE_CUTS);
 
 	//	// DRAW SUBDIVISION
 	CustomScene s;

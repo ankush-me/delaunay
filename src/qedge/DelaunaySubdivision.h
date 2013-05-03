@@ -118,6 +118,9 @@ class DelaunaySubdivision {
 public:
 	typedef boost::shared_ptr<DelaunaySubdivision> Ptr;
 
+	void drawEdges();
+
+
 	DelaunaySubdivision(std::string fname, std::string outname="xdefaultx");
 
 	/** List of all the quad-edges in the subdivision. */

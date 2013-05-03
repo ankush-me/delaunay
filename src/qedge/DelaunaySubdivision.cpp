@@ -240,8 +240,8 @@ DelaunaySubdivision::unrotate_handles(std::pair<Edge::Ptr, Edge::Ptr> handles) {
 	while(bh->Rnext()->org()->x() < bh->org()->x())
 		bh = bh->Rnext();
 
-	while(th->Lprev()->org()->x() > th->org()->x())
-		th = th->Lprev();
+	while(th->Lnext()->org()->x() > th->org()->x())
+		th = th->Lnext();
 
 	return make_pair(bh, th);
 }
@@ -322,3 +322,11 @@ void DelaunaySubdivision::computeDelaunay(CutsType t) {
 void DelaunaySubdivision::writeToFile() {
 	writeSubdivision(out_prefix+".ele", this);
 }
+
+
+
+
+void DelaunaySubdivision::drawEdges() {
+
+}
+
