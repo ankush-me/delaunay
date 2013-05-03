@@ -30,11 +30,17 @@ enum CutsType {
 
 class DelaunaySubdivision {
 
+	// prefix of the .node used.
+	std::string out_prefix;
+
+	// holds the vertices
+	std::vector<Vector2dPtr> points;
+
 	/** Does mundane checks on the range of the indices. */
-	void checkRange(std::vector<Vector2dPtr> &pts, const int start, const int end) const;
+	void checkRange(const int start, const int end) const;
 
 	/** Handles base-cases of delaunay triangulation; i.e. when |S| is 2 or 3.*/
-	std::pair<Edge::Ptr, Edge::Ptr> doBaseCases(std::vector<Vector2dPtr> &pts, const int start, const int end);
+	std::pair<Edge::Ptr, Edge::Ptr> doBaseCases(const int start, const int end);
 
 	/** Rotate the handles.
 	 *  First handle  (this is the LEFT handle) goes DOWN,
@@ -58,17 +64,6 @@ class DelaunaySubdivision {
 	mergeTriangulations(std::pair<Edge::Ptr, Edge::Ptr> first_hs,
 			std::pair<Edge::Ptr, Edge::Ptr> second_hs);
 
-public:
-	typedef boost::shared_ptr<DelaunaySubdivision> Ptr;
-
-
-	DelaunaySubdivision();
-
-	/** List of all the quad-edges in the subdivision. */
-	boost::unordered_set<QuadEdge::Ptr> qedges;
-
-	boost::unordered_map<Vector2dPtr, int> pt2index;
-
 	/** Adds a new edge connecting the destination of e1 to the origin of e2.
 	 *  Returns the first primal edge of the newly added quad-edge.*/
 	Edge::Ptr connect(Edge::Ptr e1, Edge::Ptr e2);
@@ -88,7 +83,7 @@ public:
 	 *  start : the start index of PTS
 	 *  end   : the end index   of PTS */
 	std::pair<Edge::Ptr, Edge::Ptr>
-	divideConquerVerticalCuts(std::vector<Vector2dPtr> &pts, int start, int end);
+	divideConquerVerticalCuts(int start, int end);
 
 	/** Adapted from the G&S [pg. 114] divide-and-conquer algorithm
 	 *  for delaunay triangulation using ALTERNATING CUTS.
@@ -100,7 +95,23 @@ public:
 	 *  end   : the end index   of PTS
 	 *  axis  : the axis along which the point-set needs to be cut. */
 	std::pair<Edge::Ptr, Edge::Ptr>
-	divideConquerAlternatingCuts(std::vector<Vector2dPtr> &pts, int start, int end, int axis=1);
+	divideConquerAlternatingCuts(int start, int end, int axis=1);
+
+public:
+	typedef boost::shared_ptr<DelaunaySubdivision> Ptr;
+
+	DelaunaySubdivision(std::string fname, std::string outname="xdefaultx");
+
+	/** List of all the quad-edges in the subdivision. */
+	boost::unordered_set<QuadEdge::Ptr> qedges;
+
+	boost::unordered_map<Vector2dPtr, int> pt2index;
+
+	/** main interface function.*/
+	void computeDelaunay(CutsType t=ALTERNATE_CUTS);
+
+	/** Writes this subdivision to file.*/
+	void writeToFile();
 };
 
 // wrapper for CCW checks for pointer to points.

@@ -82,7 +82,7 @@ void readNodeFile(const std::string &fname,
 }
 
 
-void reportTriangle(Edge::Ptr e, DelaunaySubdivision::Ptr subD,
+void reportTriangle(Edge::Ptr e, DelaunaySubdivision* subD,
 		boost::unordered_set<Edge::Ptr> &marked,
 		std::vector<std::vector<int> >  &tris) {
 	if (marked.find(e) == marked.end()) {// not marked
@@ -111,7 +111,7 @@ void reportTriangle(Edge::Ptr e, DelaunaySubdivision::Ptr subD,
 /** Writes an .ele file, corresponding to the .node file
  *  which was used to construct the triangulation.
  *  The name of the output file is fname.ele. */
-void writeSubdivision(const std::string &fname, const DelaunaySubdivision::Ptr subD) {
+void writeSubdivision(const std::string &fname, DelaunaySubdivision* subD) {
 	boost::unordered_set<Edge::Ptr> marked;
 	vector<vector<int> > tris;
 

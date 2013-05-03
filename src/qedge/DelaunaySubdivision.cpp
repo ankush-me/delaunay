@@ -4,6 +4,7 @@
  *  Guibas & Stolfi, pages 103 and 104.*/
 
 #include "DelaunaySubdivision.h"
+#include "io_utils.h"
 #include "utils/sorting.h"
 
 using namespace Eigen;
@@ -40,7 +41,18 @@ bool valid (Edge::Ptr e, Edge::Ptr basel) {
 }
 
 /** Constructor. */
-DelaunaySubdivision::DelaunaySubdivision() {}
+DelaunaySubdivision::DelaunaySubdivision(string fname, string outname) : points(), pt2index(), qedges() {
+	if (fname.substr(fname.length()-5,5)!= ".node") {
+		cout << "Expecting input file with .node extension. Instead, found "
+		<<fname.substr(fname.length()-5,5)<<". Exiting.\n";
+		exit(-1);
+	}
+
+	int slash_pos = fname.find_last_of("/");
+	out_prefix  = (outname =="xdefaultx")? fname.substr(slash_pos+1, fname.length()-slash_pos-6) : outname;
+
+	readNodeFile(fname, points, pt2index);
+}
 
 /** Adds a new edge connecting the destination of e1 to the origin of e2.
  *  Returns the first primal edge of the newly added quad-edge.
@@ -84,39 +96,38 @@ void DelaunaySubdivision::swap(Edge::Ptr e) {
 
 
 /** Does mundane checks on the range of the indices. */
-void DelaunaySubdivision::checkRange(std::vector<Vector2dPtr> &pts,
-		const int start, const int end) const {
+void DelaunaySubdivision::checkRange(const int start, const int end) const {
 	// check the range of the indices.
-	assert (("Delaunay Div-&-Conquer : Indices out of range.",
-			0<=start && start < pts.size()));
-	assert (("Delaunay Div-&-Conquer : Indices out of range.",
-			start <= end && 0<=end && end<pts.size()));
+	if (!(0<=start && start < points.size() && start <= end && 0<=end && end<points.size())) {
+		cout <<"Delaunay Div-&-Conquer : Indices out of range. Exiting\n";
+		exit(-1);
+	}
 
 	if (end-start+1 < 2) {
 		cout << " Divide and conquer expecting at least 2 points. Found "
-				<< pts.size() << " ." << endl;
-		throw(-1);
+				<< points.size() << " ." << endl;
+		exit(-1);
 	}
 }
 
 
 /** Handles base-cases of delaunay triangulation; i.e. when |S| is 2 or 3.*/
 std::pair<Edge::Ptr, Edge::Ptr>
-DelaunaySubdivision::doBaseCases(std::vector<Vector2dPtr> &pts, const int start, const int end) {
+DelaunaySubdivision::doBaseCases(const int start, const int end) {
 	const int SIZE = end-start+1;
 	if (SIZE == 2) {
 		// make a single edge
 		Edge::Ptr a =  QuadEdge::makeEdge(); qedges.insert(a->qEdge());
-		a->setOrg (pts[start + 0]);
-		a->setDest(pts[start + 1]);
+		a->setOrg (points[start + 0]);
+		a->setDest(points[start + 1]);
 
 		return make_pair(a, a->Sym());
 	}
 
 	else if (SIZE == 3) {
-		Vector2dPtr p1  = pts[start + 0];
-		Vector2dPtr p2  = pts[start + 1];
-		Vector2dPtr p3  = pts[start + 2];
+		Vector2dPtr p1  = points[start + 0];
+		Vector2dPtr p2  = points[start + 1];
+		Vector2dPtr p3  = points[start + 2];
 
 		// make two edges
 		Edge::Ptr a = QuadEdge::makeEdge(); qedges.insert(a->qEdge());
@@ -147,17 +158,17 @@ DelaunaySubdivision::doBaseCases(std::vector<Vector2dPtr> &pts, const int start,
  *  start : the start index of PTS [INCLUSIVE].
  *  end   : the end   index of PTS [INCLUSIVE]. */
 std::pair<Edge::Ptr, Edge::Ptr>
-DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> &pts, int start, int end) {
+DelaunaySubdivision::divideConquerVerticalCuts(int start, int end) {
 	const int SIZE = end-start+1;
-	checkRange(pts, start, end);
+	checkRange(start, end);
 
 	if (SIZE==2 || SIZE==3)
-		return doBaseCases(pts, start, end);
+		return doBaseCases(start, end);
 	else {
 		// make recursive calls. Split the points into left and right
 		const int mid = start + (end-start)/2;
-		pair<Edge::Ptr, Edge::Ptr> lhandles = divideConquerVerticalCuts(pts, start, mid);
-		pair<Edge::Ptr, Edge::Ptr> rhandles = divideConquerVerticalCuts(pts, mid+1, end);
+		pair<Edge::Ptr, Edge::Ptr> lhandles = divideConquerVerticalCuts(start, mid);
+		pair<Edge::Ptr, Edge::Ptr> rhandles = divideConquerVerticalCuts(mid+1, end);
 
 		return mergeTriangulations (lhandles, rhandles);
 	}
@@ -174,22 +185,21 @@ DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> &pts, int sta
  *  end   : the end index   of PTS
  *  axis  : the axis along which the point-set needs to be cut. */
 std::pair<Edge::Ptr, Edge::Ptr>
-DelaunaySubdivision::divideConquerAlternatingCuts(std::vector<Vector2dPtr> &pts,
-		int start, int end, int axis) {
+DelaunaySubdivision::divideConquerAlternatingCuts(int start, int end, int axis) {
 	const int SIZE = end-start+1;
-	checkRange(pts, start, end);
+	checkRange(start, end);
 
 	if (SIZE == 2 || SIZE ==3) {
 		// sort lexico-graphically for further processing.
 		// this takes constant time, as the size is constant.
-		lexicoSort(pts, start, end);
-		return doBaseCases(pts, start, end);
+		lexicoSort(points, start, end);
+		return doBaseCases(start, end);
 	} else {
 		// make recursive calls. Split the points into left and right
-		const int mid = median(pts, start, end, axis);
+		const int mid = median(points, start, end, axis);
 
-		pair<Edge::Ptr, Edge::Ptr> first_handles  = divideConquerAlternatingCuts(pts, start, mid);//, mod(axis+1,2));
-		pair<Edge::Ptr, Edge::Ptr> second_handles = divideConquerAlternatingCuts(pts, mid+1, end);//, mod(axis+1,2));
+		pair<Edge::Ptr, Edge::Ptr> first_handles  = divideConquerAlternatingCuts(start, mid);//, mod(axis+1,2));
+		pair<Edge::Ptr, Edge::Ptr> second_handles = divideConquerAlternatingCuts(mid+1, end);//, mod(axis+1,2));
 
 		if (axis==1) { //horizontal cut : rotate handles
 			first_handles  = rotate_handles(first_handles);
@@ -296,4 +306,19 @@ DelaunaySubdivision::mergeTriangulations (std::pair<Edge::Ptr, Edge::Ptr> first_
 		basel = (check)? connect(rcand, basel->Sym()) : connect(basel->Sym(), lcand->Sym());
 	}
 	return make_pair(ldo, rdo);
+}
+
+
+/** Main interface function.*/
+void DelaunaySubdivision::computeDelaunay(CutsType t) {
+	if (t==VERTICAL_CUTS) {
+		divideConquerVerticalCuts(0, points.size()-1);
+	} else {
+		divideConquerAlternatingCuts(0, points.size()-1);
+	}
+}
+
+/** Writes this subdivision to file.*/
+void DelaunaySubdivision::writeToFile() {
+	writeSubdivision(out_prefix+".ele", this);
 }

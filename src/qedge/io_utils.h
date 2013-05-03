@@ -33,6 +33,6 @@ void readNodeFile(const std::string &fname,
 /** Writes an .ele and its corresponding .node file,
  *  for a given delaunay triangulation.
  *  The name of the output file are {fname.ele, fname.node}. */
-void writeSubdivision(const std::string &fname, const DelaunaySubdivision::Ptr sub);
+void writeSubdivision(const std::string &fname, DelaunaySubdivision* sub);
 
 #endif //__IO_UTILS_H__
