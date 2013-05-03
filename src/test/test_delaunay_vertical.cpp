@@ -64,15 +64,15 @@ void doDelaunay(vector2d &pts, bool verbose=false) {
 
 void testNODEFile(const int fidx = 0) {
 	string files[] = {"4.node",
-			          "box.node",
-			          "flag.node",
-			          "ladder.node",
-			          "tri.node",
-			          "633.node",
-			          "dots.node",
-			          "grid.node",
-			          "spiral.node",
-			          "ttimeu1000000.node"};
+			"box.node",
+			"flag.node",
+			"ladder.node",
+			"tri.node",
+			"633.node",
+			"dots.node",
+			"grid.node",
+			"spiral.node",
+			"ttimeu1000000.node"};
 
 	string fname = string(EXPAND (PROJECT_DATA_DIR)) + "/" +  files[fidx];
 	vector2d points;
@@ -95,26 +95,28 @@ void testRand(const int N=10) {
 /** Plots the delaunay triangulation of a random set of points. */
 void testBox(const int N=10) {
 
-//	vector2d pts(9);
-//	pts[0] = Vector2d(0,0);
-//	pts[1] = Vector2d(1,0);
-//	pts[2] = Vector2d(1,1);
-//	pts[3] = Vector2d(0,1);
-//	pts[4] = Vector2d(2,0);
-//	pts[5] = Vector2d(2,1);
-//
-//	pts[6] = Vector2d(0,2);
-//	pts[7] = Vector2d(1,2);
-//	pts[8] = Vector2d(2,2);
-//
 
-	vector2d pts(5);
-	pts[0] = Vector2d(0,0);
-	pts[1] = Vector2d(1,0);
-	pts[2] = Vector2d(0,1);
-	pts[3] = Vector2d(0,2);
-	pts[4] = Vector2d(1,1);
+	vector2d pts(13);
+	pts[0] = Vector2d(0.,0.);
+	pts[1] = Vector2d(0.1,0.);
+	pts[2] = Vector2d(0.2,0.);
+	pts[3] = Vector2d(0.3,0.);
+	pts[4] = Vector2d(0.4,0.);
 
+	pts[5] = Vector2d(0.,.1);
+	pts[6] = Vector2d(.1,.1);
+	pts[7] = Vector2d(.2,.1);
+	pts[8] = Vector2d(.3,.1);
+	pts[9] = Vector2d(.4,.1);
+
+	pts[10] = Vector2d(0.,.2);
+	pts[11] = Vector2d(.1,.2);
+	pts[12] = Vector2d(.2,.2);
+
+	double S = 1;
+	for (int i=0; i < pts.size(); i++) {
+		pts[i] *= S;
+	}
 
 	doDelaunay(pts,true);
 }
@@ -126,7 +128,7 @@ int main (int argc, char* argv[]) {
 		N = atoi(argv[1]);
 	}
 	//testRand(N);
-	//testNODEFile(7);
-	testBox();
+	testNODEFile(7);
+	//testBox();
 	return 0;
 }

@@ -18,7 +18,7 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
-	const int N = 6;
+	const int N = 4;
 
 	//	MatrixXd randm = MatrixXd::Random(N,2);
 	//	vector2d pts(N);
@@ -30,18 +30,23 @@ int main(int argc, char** argv) {
 	//
 
 	vector<boost::shared_ptr<Vector2d> > pts(N);
-	MatrixXd randm = MatrixXd::Random(N,2);
-	for (int i = 0 ; i < N; i+=1)
-		pts[i].reset(new Vector2d(randm.row(i)));
+	pts[0].reset(new Vector2d(0,0));
+	pts[1].reset(new Vector2d(1,0));
+	pts[2].reset(new Vector2d(1,1));
+	pts[3].reset(new Vector2d(0,1));
 
-	int s = 1;
-	int e = 4;
+//	MatrixXd randm = MatrixXd::Random(N,2);
+//	for (int i = 0 ; i < N; i+=1)
+//		pts[i].reset(new Vector2d(randm.row(i)));
+
+	int s = 0;
+	int e = 3;
 
 	for (int i = 0 ; i < N; i+=1)
 		cout <<pts[i]->transpose()<<endl;
 
 	//lexicoSort(pts, 1, s, e);
-	int mid = median(pts, s, e, 0);
+	int mid = median(pts, s, e, 1);
 
 	cout <<"-------------\n";
 	cout << "median int : "<<mid<<endl;
@@ -49,13 +54,5 @@ int main(int argc, char** argv) {
 		cout <<pts[i]->transpose()<<endl;
 	}
 
-	Vector2dPtr v1, v2;
-	v1.reset(new Vector2d(0,1));
-	v2.reset(new Vector2d(1,1));
-	PtrCoordinateComparatorEQ y_comparator(2,1);
-	cout << "COMP : "<<((y_comparator(v1,v2))? "true" : "false")<<endl;
-
-
-	//median = a[size/2];
 	return 0;
 }

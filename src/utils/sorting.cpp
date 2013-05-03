@@ -1,5 +1,20 @@
 #include "sorting.h"
 
+PtrCoordinateComparatorEQ::PtrCoordinateComparatorEQ(int _d, int _i) : d(_d), i(mod(_i,d)) {}
+bool PtrCoordinateComparatorEQ::operator() (const boost::shared_ptr<Eigen::Vector2d> &v1,
+		const boost::shared_ptr<Eigen::Vector2d> &v2) const {
+
+	using namespace std;
+
+	cout << "  comparing : "<<(*v1).transpose()<<"|"<<v2->transpose()<<endl;
+	bool ret;
+	if ((*v1)[1] > (*v2)[1]) ret = false;
+	else
+		ret = (  ((*v1)[1] < (*v2)[1])? true : ((*v1)[0] > (*v2)[0]));
+	cout << "     returning : "<<(ret?"true": "false")<<endl;
+	return ret;
+
+}
 
 PtrCoordinateComparator::PtrCoordinateComparator(int _d, int _i) : d(_d), i(mod(_i,d)) {}
 bool PtrCoordinateComparator::operator() (const boost::shared_ptr<Eigen::Vector2d> &v1,
@@ -13,21 +28,6 @@ bool PtrCoordinateComparator::operator() (const boost::shared_ptr<Eigen::Vector2
 	} while (c != i);
 	return false;
 }
-
-PtrCoordinateComparatorEQ::PtrCoordinateComparatorEQ(int _d, int _i) : d(_d), i(mod(_i,d)) {}
-bool PtrCoordinateComparatorEQ::operator() (const boost::shared_ptr<Eigen::Vector2d> &v1,
-		const boost::shared_ptr<Eigen::Vector2d> &v2) const {
-	int c = i;
-	do {
-		if ((*v1)[c] == (*v2)[c])
-			c = mod(c+1,d);
-		else
-			return ((*v1)[c] <= (*v2)[c]);
-	} while (c != i);
-	return false;
-}
-
-
 
 CoordinateComparator::CoordinateComparator(int _d, int _i) : d(_d), i(mod(_i,d)) {}
 bool CoordinateComparator::operator() (const Eigen::VectorXd &v1, const Eigen::VectorXd &v2) const {
