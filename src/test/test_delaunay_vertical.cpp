@@ -127,8 +127,8 @@ int main (int argc, char* argv[]) {
 	if (argc ==2) {
 		N = atoi(argv[1]);
 	}
-	//testRand(N);
-	testNODEFile(7);
+	testRand(N);
+	//testNODEFile(7);
 	//testBox();
 	return 0;
 }

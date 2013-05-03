@@ -12,7 +12,6 @@ using namespace std;
 // wrapper for CCW checks for pointer to points.
 bool  ccw(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c) {
 	bool ret =  ccw(*a, *b, *c);
-	cout << "CCW TEST : "<<(ret?"true":"false")<<endl;
 	return ret;
 }
 
@@ -21,7 +20,6 @@ bool incircle(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c, Vector2dPtr d) {
 	double val =  incircle(*a, *b, *c, *d);
 	if (val < 1e-18) val = 0;
 	bool ret =  val > 0.0;
-	cout << "INCIRCLE TEST : "<<val<<" "<<(ret?"true":"false")<<endl;
 	return ret;
 }
 
@@ -40,7 +38,6 @@ bool leftOf(Vector2dPtr x, Edge::Ptr e) {
 bool valid (Edge::Ptr e, Edge::Ptr basel) {
 	return rightOf(e->dest(), basel);
 }
-
 
 /** Constructor. */
 DelaunaySubdivision::DelaunaySubdivision(CutsType t) : location(t), qedges() {}
@@ -113,9 +110,6 @@ DelaunaySubdivision::doBaseCases(std::vector<Vector2dPtr> &pts, const int start,
 		Edge::Ptr a =  QuadEdge::makeEdge(); qedges.insert(a->qEdge());
 		a->setOrg (pts[start + 0]);
 		a->setDest(pts[start + 1]);
-		//		cout << "  base case: size : "<<SIZE<<endl;
-		//		cout << "   first handle  : ["<<a->org()->transpose()<<"]-->["<<a->dest()->transpose()<<"]"<<endl;
-		//		cout << "   second handle : ["<<a->Sym()->org()->transpose()<<"]-->["<<a->Sym()->dest()->transpose()<<"]"<<endl;
 
 		return make_pair(a, a->Sym());
 	}
@@ -135,23 +129,11 @@ DelaunaySubdivision::doBaseCases(std::vector<Vector2dPtr> &pts, const int start,
 		// close the triangle
 		if (ccw(p1, p2, p3)) {
 			Edge::Ptr c = connect(b, a);
-
-			//			cout << "  base case: size : "<<SIZE<<endl;
-			//			cout << "   first handle  : ["<<a->org()->transpose()<<"]-->["<<a->dest()->transpose()<<"]"<<endl;
-			//			cout << "   second handle : ["<<b->Sym()->org()->transpose()<<"]-->["<<b->Sym()->dest()->transpose()<<"]"<<endl;
-
 			return make_pair(a, b->Sym());
 		} else if (ccw(p1, p3, p2)) {
 			Edge::Ptr c = connect(b, a);
-			//			cout << "  base case: size : "<<SIZE<<endl;
-			//			cout << "   first handle : ["<<c->Sym()->org()->transpose()<<"]-->["<<c->Sym()->dest()->transpose()<<"]"<<endl;
-			//			cout << "   second handle  : ["<<c->org()->transpose()<<"]-->["<<c->dest()->transpose()<<"]"<<endl;
-
-
 			return make_pair(c->Sym(), c);
 		} else {// collinear
-			//			cout << "   first handle  : ["<<a->org()->transpose()<<"]-->["<<a->dest()->transpose()<<"]"<<endl;
-			//			cout << "   second handle : ["<<b->Sym()->org()->transpose()<<"]-->["<<b->Sym()->dest()->transpose()<<"]"<<endl;
 			return make_pair(a, b->Sym());
 		}
 	}
@@ -195,7 +177,6 @@ DelaunaySubdivision::divideConquerVerticalCuts(vector<Vector2dPtr> &pts, int sta
 std::pair<Edge::Ptr, Edge::Ptr>
 DelaunaySubdivision::divideConquerAlternatingCuts(std::vector<Vector2dPtr> &pts,
 		int start, int end, int axis) {
-	cout << "CALLED"<<endl;
 	const int SIZE = end-start+1;
 	checkRange(pts, start, end);
 
@@ -203,42 +184,18 @@ DelaunaySubdivision::divideConquerAlternatingCuts(std::vector<Vector2dPtr> &pts,
 		// sort lexico-graphically for further processing.
 		// this takes constant time, as the size is constant.
 		lexicoSort(pts, start, end);
-
-		//		cout << "BASE CASE : \n"
-		//				<< "  SIZE  : "<<SIZE<<"\n"
-		//				<< "  Points [sorted] : \n";
-		//		for (int i=0; i < SIZE; i++) {
-		//			cout << "   "<<pts[start+i]->transpose()<<endl;
-		//		}
-
 		return doBaseCases(pts, start, end);
 	} else {
 		// make recursive calls. Split the points into left and right
 		const int mid = median(pts, start, end, axis);
 
-		//--------------------------------------
-		lexicoSort(pts, start, mid); // REMOVE
-		lexicoSort(pts, mid+1, end); // REMOVE
-		//--------------------------------------
-
-		pair<Edge::Ptr, Edge::Ptr> first_handles  = divideConquerVerticalCuts(pts, start, mid);//, mod(axis+1,2));
-		pair<Edge::Ptr, Edge::Ptr> second_handles = divideConquerVerticalCuts(pts, mid+1, end);//, mod(axis+1,2));
-
-		cout << "BEFORE ROTATING ..\n";
-		cout << "   left handle out  : ["<<first_handles.first->org()->transpose()<<"]-->["<<first_handles.first->dest()->transpose()<<"]"<<endl;
-		cout << "   left handle in   : ["<<first_handles.second->org()->transpose()<<"]-->["<<first_handles.second->dest()->transpose()<<"]"<<endl;
-		cout << "   right handle out : ["<<second_handles.first->org()->transpose()<<"]-->["<<second_handles.first->dest()->transpose()<<"]"<<endl;
-		cout << "   right handle in  : ["<<second_handles.second->org()->transpose()<<"]-->["<<second_handles.second->dest()->transpose()<<"]"<<endl;
+		pair<Edge::Ptr, Edge::Ptr> first_handles  = divideConquerAlternatingCuts(pts, start, mid);//, mod(axis+1,2));
+		pair<Edge::Ptr, Edge::Ptr> second_handles = divideConquerAlternatingCuts(pts, mid+1, end);//, mod(axis+1,2));
 
 		if (axis==1) { //horizontal cut : rotate handles
 			first_handles  = rotate_handles(first_handles);
 			second_handles = rotate_handles(second_handles);
 		}
-		cout << "After rotating ..\n";
-		cout << "   bottom handle 0  : ["<<first_handles.first->org()->transpose()<<"]-->["<<first_handles.first->dest()->transpose()<<"]"<<endl;
-		cout << "   bottom handle 1  : ["<<first_handles.second->org()->transpose()<<"]-->["<<first_handles.second->dest()->transpose()<<"]"<<endl;
-		cout << "   bottom handle 0  : ["<<second_handles.first->org()->transpose()<<"]-->["<<second_handles.first->dest()->transpose()<<"]"<<endl;
-		cout << "   bottom handle 1  : ["<<second_handles.second->org()->transpose()<<"]-->["<<second_handles.second->dest()->transpose()<<"]"<<endl;
 
 		pair<Edge::Ptr, Edge::Ptr> outer_handles  = mergeTriangulations (first_handles, second_handles);
 		return ((axis==1)? unrotate_handles(outer_handles) : outer_handles);
@@ -272,12 +229,11 @@ DelaunaySubdivision::unrotate_handles(std::pair<Edge::Ptr, Edge::Ptr> handles) {
 	Edge::Ptr bh = handles.first;
 	Edge::Ptr th = handles.second;
 
-	PtrCoordinateComparator x_comparator(2,0);
 
-	while(x_comparator(bh->org(), bh->dest()))
+	while(bh->Rnext()->org()->x() < bh->org()->x())
 		bh = bh->Rnext();
 
-	while(x_comparator(th->org(), th->dest()))
+	while(th->Lprev()->org()->x() > th->org()->x())
 		th = th->Lprev();
 
 	return make_pair(bh, th);
