@@ -112,6 +112,7 @@ void testRand(const int N=10) {
 
 	DelaunaySubdivision subD(fname);
 	subD.computeDelaunay(ALTERNATE_CUTS);
+	subD.writeToFile();
 
 	//	// DRAW SUBDIVISION
 	CustomScene s;
@@ -207,9 +208,9 @@ int main (int argc, char* argv[]) {
 	if (argc ==2) {
 		N = atoi(argv[1]);
 	}
-	testRand(N);
+	//testRand(N);
 	//testNODEFile(N);
 	//testBox();
-	//newTest(N);
+	newTest(N);
 	return 0;
 }
