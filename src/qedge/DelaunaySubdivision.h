@@ -9,6 +9,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/unordered_set.hpp>
+#include <boost/unordered_map.hpp>
 
 #include "utils/geom_predicates.h"
 
@@ -28,9 +29,6 @@ enum CutsType {
 
 
 class DelaunaySubdivision {
-
-	/** The type of division used in divide-conquer algo. */
-	const CutsType location;
 
 	/** Does mundane checks on the range of the indices. */
 	void checkRange(std::vector<Vector2dPtr> &pts, const int start, const int end) const;
@@ -63,10 +61,13 @@ class DelaunaySubdivision {
 public:
 	typedef boost::shared_ptr<DelaunaySubdivision> Ptr;
 
+
+	DelaunaySubdivision();
+
 	/** List of all the quad-edges in the subdivision. */
 	boost::unordered_set<QuadEdge::Ptr> qedges;
 
-	DelaunaySubdivision(CutsType t);
+	boost::unordered_map<Vector2dPtr, int> pt2index;
 
 	/** Adds a new edge connecting the destination of e1 to the origin of e2.
 	 *  Returns the first primal edge of the newly added quad-edge.*/
@@ -76,7 +77,7 @@ public:
 	void deleteEdge(Edge::Ptr e);
 
 	/** Flips the diagonal of the quadrilateral containing e. From G&S [pg. 104]. */
-	void swap(Edge::Ptr e);
+	void swap(Edge::Ptr e); // NOT REQUIRED FOR DIVIDE-AND-CONQUER
 
 	/** Implements the G&S [pg. 114] divide-and-conquer algorithm
 	 *  for delaunay triangulation using VERTICAL CUTS.
@@ -88,7 +89,6 @@ public:
 	 *  end   : the end index   of PTS */
 	std::pair<Edge::Ptr, Edge::Ptr>
 	divideConquerVerticalCuts(std::vector<Vector2dPtr> &pts, int start, int end);
-
 
 	/** Adapted from the G&S [pg. 114] divide-and-conquer algorithm
 	 *  for delaunay triangulation using ALTERNATING CUTS.

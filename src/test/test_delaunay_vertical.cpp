@@ -13,6 +13,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <vector>
+#include <boost/unordered_map.hpp>
 #include <limits>
 
 using namespace Eigen;
@@ -30,27 +31,32 @@ vector<Vector2dPtr> toPtrVector(const vector2d &pts) {
 }
 
 // compute delaunay triangulation and display it in the viewer.
-void doDelaunay(vector2d &pts, bool verbose=false) {
+void doDelaunay(vector<Vector2dPtr> &pts, boost::unordered_map<Vector2dPtr, int> &umap,
+		bool verbose=false) {
 	CustomScene s;
 	Eigen::Affine3f tf = Eigen::Affine3f::Identity();
 	util::drawAxes(tf, 0.5, s.env);
 
-	lexicoSort(pts);
+	lexicoSort(pts, 0, pts.size()-1);
 
 	if (verbose) {
 		for (int i=0; i < pts.size(); i++)
-			cout << pts[i].transpose()<<endl;
+			cout << pts[i]->transpose()<<endl;
 		cout << "sorted points."<<endl;
 	}
-	vector<Vector2dPtr> ptrPTS = toPtrVector(pts);
 
-	DelaunaySubdivision subD(VERTICAL_CUTS);
-	subD.divideConquerAlternatingCuts(ptrPTS, 0, pts.size()-1);
+	DelaunaySubdivision::Ptr subD(new DelaunaySubdivision);
+	subD->pt2index = umap;
+	subD->divideConquerAlternatingCuts(pts, 0, pts.size()-1);
 
-	vector3f pts0(subD.qedges.size()), pts1(subD.qedges.size());
+	writeSubdivision("blah", subD);
+
+
+	// DRAW SUBDIVISION
+	vector3f pts0(subD->qedges.size()), pts1(subD->qedges.size());
 	int i = 0;
-	for(boost::unordered_set<QuadEdge::Ptr>::iterator it = subD.qedges.begin();
-			it != subD.qedges.end(); it++, i++) {
+	for(boost::unordered_set<QuadEdge::Ptr>::iterator it = subD->qedges.begin();
+			it != subD->qedges.end(); it++, i++) {
 		QuadEdge::Ptr q = *it;
 		Vector2dPtr org = q->edges[0]->org();
 		Vector2dPtr dst = q->edges[0]->dest();
@@ -75,9 +81,16 @@ void testNODEFile(const int fidx = 0) {
 			"ttimeu1000000.node"};
 
 	string fname = string(EXPAND (PROJECT_DATA_DIR)) + "/" +  files[fidx];
-	vector2d points;
-	readNodeFile(fname, points);
-	doDelaunay(points, true);
+	vector<Vector2dPtr> points;
+	boost::unordered_map<Vector2dPtr, int> umap;
+	readNodeFile(fname, points, umap);
+
+	cout << "printing vertex indices : "<<endl;
+	for (int i=0; i < points.size(); i++)
+		cout << umap[points[i]]<<" : "<<points[i]->transpose()<<endl;
+
+	doDelaunay(points, umap, true);
+
 }
 
 
@@ -85,40 +98,39 @@ void testNODEFile(const int fidx = 0) {
 void testRand(const int N=10) {
 
 	MatrixXd randm = MatrixXd::Random(N,2);
-	vector2d pts(N);
+	vector<Vector2dPtr> pts(N);
 	for (int i = 0 ; i < N; i+=1)
-		pts[i] = randm.row(i);
+		pts[i] = Vector2dPtr(new Vector2d(randm.row(i)));
 
-	doDelaunay(pts);
+	//doDelaunay(pts);
 }
 
 /** Plots the delaunay triangulation of a random set of points. */
 void testBox(const int N=10) {
 
+	vector<Vector2dPtr> pts(13);
+	pts[0].reset(new Vector2d(0.,0.));
+	pts[1].reset(new Vector2d(0.1,0.));
+	pts[2].reset(new Vector2d(0.2,0.));
+	pts[3].reset(new Vector2d(0.3,0.));
+	pts[4].reset(new Vector2d(0.4,0.));
 
-	vector2d pts(13);
-	pts[0] = Vector2d(0.,0.);
-	pts[1] = Vector2d(0.1,0.);
-	pts[2] = Vector2d(0.2,0.);
-	pts[3] = Vector2d(0.3,0.);
-	pts[4] = Vector2d(0.4,0.);
+	pts[5].reset(new Vector2d(0.,.1));
+	pts[6].reset(new Vector2d(.1,.1));
+	pts[7].reset(new Vector2d(.2,.1));
+	pts[8].reset(new Vector2d(.3,.1));
+	pts[9].reset(new Vector2d(.4,.1));
 
-	pts[5] = Vector2d(0.,.1);
-	pts[6] = Vector2d(.1,.1);
-	pts[7] = Vector2d(.2,.1);
-	pts[8] = Vector2d(.3,.1);
-	pts[9] = Vector2d(.4,.1);
-
-	pts[10] = Vector2d(0.,.2);
-	pts[11] = Vector2d(.1,.2);
-	pts[12] = Vector2d(.2,.2);
+	pts[10].reset(new Vector2d(0.,.2));
+	pts[11].reset(new Vector2d(.1,.2));
+	pts[12].reset(new Vector2d(.2,.2));
 
 	double S = 1;
 	for (int i=0; i < pts.size(); i++) {
-		pts[i] *= S;
+		*pts[i] *= S;
 	}
 
-	doDelaunay(pts,true);
+	//doDelaunay(pts,true);
 }
 
 
@@ -127,8 +139,8 @@ int main (int argc, char* argv[]) {
 	if (argc ==2) {
 		N = atoi(argv[1]);
 	}
-	testRand(N);
-	//testNODEFile(7);
+	//testRand(N);
+	testNODEFile(N);
 	//testBox();
 	return 0;
 }
