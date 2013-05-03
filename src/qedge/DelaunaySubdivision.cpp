@@ -19,7 +19,8 @@ bool  ccw(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c) {
 /** Wrapper for incircle (orient2d) function.*/
 bool incircle(Vector2dPtr a, Vector2dPtr b, Vector2dPtr c, Vector2dPtr d) {
 	double val =  incircle(*a, *b, *c, *d);
-	if (abs(val) < 1e-18) val = 0;
+	//cout << "incircle :"<<val<<endl;
+	//if (abs(val) < 1e-18) val = 0;
 	bool ret =  val > 0.0;
 	return ret;
 }
@@ -44,7 +45,7 @@ bool valid (Edge::Ptr e, Edge::Ptr basel) {
 DelaunaySubdivision::DelaunaySubdivision(string fname, string outname) : points(), pt2index(), qedges() {
 	if (fname.substr(fname.length()-5,5)!= ".node") {
 		cout << "Expecting input file with .node extension. Instead, found "
-		<<fname.substr(fname.length()-5,5)<<". Exiting.\n";
+				<<fname.substr(fname.length()-5,5)<<". Exiting.\n";
 		exit(-1);
 	}
 
@@ -196,8 +197,9 @@ DelaunaySubdivision::divideConquerAlternatingCuts(int start, int end, int axis) 
 		// make recursive calls. Split the points into left and right
 		const int mid = median(points, start, end, axis);
 
-		pair<Edge::Ptr, Edge::Ptr> first_handles  = divideConquerAlternatingCuts(start, mid);//, mod(axis+1,2));
-		pair<Edge::Ptr, Edge::Ptr> second_handles = divideConquerAlternatingCuts(mid+1, end);//, mod(axis+1,2));
+
+		pair<Edge::Ptr, Edge::Ptr> first_handles  = divideConquerAlternatingCuts(start, mid, mod(axis+1,2));
+		pair<Edge::Ptr, Edge::Ptr> second_handles = divideConquerAlternatingCuts(mid+1, end, mod(axis+1,2));
 
 		if (axis==1) { //horizontal cut : rotate handles
 			first_handles  = rotate_handles(first_handles);
@@ -206,7 +208,6 @@ DelaunaySubdivision::divideConquerAlternatingCuts(int start, int end, int axis) 
 
 		pair<Edge::Ptr, Edge::Ptr> outer_handles  = mergeTriangulations (first_handles, second_handles);
 		return ((axis==1)? unrotate_handles(outer_handles) : outer_handles);
-		return first_handles;
 	}
 }
 
@@ -236,7 +237,6 @@ DelaunaySubdivision::unrotate_handles(std::pair<Edge::Ptr, Edge::Ptr> handles) {
 	Edge::Ptr bh = handles.first;
 	Edge::Ptr th = handles.second;
 
-
 	while(bh->Rnext()->org()->x() < bh->org()->x())
 		bh = bh->Rnext();
 
@@ -245,6 +245,7 @@ DelaunaySubdivision::unrotate_handles(std::pair<Edge::Ptr, Edge::Ptr> handles) {
 
 	return make_pair(bh, th);
 }
+
 
 /** Merges triangulations, given the appropriate handles of their convex hulls.
  *  if the triangulations are LEFT, RIGHT, then:
@@ -310,6 +311,7 @@ DelaunaySubdivision::mergeTriangulations (std::pair<Edge::Ptr, Edge::Ptr> first_
 /** Main interface function.*/
 void DelaunaySubdivision::computeDelaunay(CutsType t) {
 	if (t==VERTICAL_CUTS) {
+		lexicoSort(points, 0, points.size()-1);
 		divideConquerVerticalCuts(0, points.size()-1);
 	} else {
 		divideConquerAlternatingCuts(0, points.size()-1);

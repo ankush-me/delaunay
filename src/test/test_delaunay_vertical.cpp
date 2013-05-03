@@ -16,6 +16,8 @@
 #include <boost/unordered_map.hpp>
 #include <limits>
 
+#include <fstream>
+
 using namespace Eigen;
 using namespace std;
 
@@ -45,26 +47,26 @@ void doDelaunay(vector<Vector2dPtr> &pts, boost::unordered_map<Vector2dPtr, int>
 		cout << "sorted points."<<endl;
 	}
 
-////	DelaunaySubdivision::Ptr subD(new DelaunaySubdivision);
-//	subD->pt2index = umap;
-//	subD->divideConquerAlternatingCuts(pts, 0, pts.size()-1);
-//
-//	writeSubdivision("blah", subD);
-//
-//
-//	// DRAW SUBDIVISION
-//	vector3f pts0(subD->qedges.size()), pts1(subD->qedges.size());
-//	int i = 0;
-//	for(boost::unordered_set<QuadEdge::Ptr>::iterator it = subD->qedges.begin();
-//			it != subD->qedges.end(); it++, i++) {
-//		QuadEdge::Ptr q = *it;
-//		Vector2dPtr org = q->edges[0]->org();
-//		Vector2dPtr dst = q->edges[0]->dest();
-//		pts0[i] = Vector3f((float)org->x(), (float) org->y(), 0.f);
-//		pts1[i] = Vector3f((float)dst->x(), (float) dst->y(), 0.f);
-//	}
-//	util::drawLines(pts0, pts1, Vector3f(1.f,0.f,0.f), 1, s.env);
-//	s.run();
+	////	DelaunaySubdivision::Ptr subD(new DelaunaySubdivision);
+	//	subD->pt2index = umap;
+	//	subD->divideConquerAlternatingCuts(pts, 0, pts.size()-1);
+	//
+	//	writeSubdivision("blah", subD);
+	//
+	//
+	//	// DRAW SUBDIVISION
+	//	vector3f pts0(subD->qedges.size()), pts1(subD->qedges.size());
+	//	int i = 0;
+	//	for(boost::unordered_set<QuadEdge::Ptr>::iterator it = subD->qedges.begin();
+	//			it != subD->qedges.end(); it++, i++) {
+	//		QuadEdge::Ptr q = *it;
+	//		Vector2dPtr org = q->edges[0]->org();
+	//		Vector2dPtr dst = q->edges[0]->dest();
+	//		pts0[i] = Vector3f((float)org->x(), (float) org->y(), 0.f);
+	//		pts1[i] = Vector3f((float)dst->x(), (float) dst->y(), 0.f);
+	//	}
+	//	util::drawLines(pts0, pts1, Vector3f(1.f,0.f,0.f), 1, s.env);
+	//	s.run();
 }
 
 
@@ -96,13 +98,39 @@ void testNODEFile(const int fidx = 0) {
 
 /** Plots the delaunay triangulation of a random set of points. */
 void testRand(const int N=10) {
+	string fname = string(EXPAND (PROJECT_DATA_DIR)) + "/" +  "temp.node";
+	fstream tmp;
+	tmp.open(fname.c_str(),ios::out);
+
+	tmp << N << "\t"<<2<<"\t"<<0<<"\t"<<0<<endl;
 
 	MatrixXd randm = MatrixXd::Random(N,2);
-	vector<Vector2dPtr> pts(N);
 	for (int i = 0 ; i < N; i+=1)
-		pts[i] = Vector2dPtr(new Vector2d(randm.row(i)));
+		tmp << i<<"\t"<<randm.row(i)(0) <<"\t"<<randm.row(i)(1) <<endl;
+	tmp.close();
 
-	//doDelaunay(pts);
+
+	DelaunaySubdivision subD(fname);
+	subD.computeDelaunay(VERTICAL_CUTS);
+
+	//	// DRAW SUBDIVISION
+	CustomScene s;
+	Eigen::Affine3f tf = Eigen::Affine3f::Identity();
+	util::drawAxes(tf, 0.5, s.env);
+	vector3f pts0(subD.qedges.size()), pts1(subD.qedges.size());
+	int i = 0;
+	for(boost::unordered_set<QuadEdge::Ptr>::iterator it = subD.qedges.begin();
+			it != subD.qedges.end(); it++, i++) {
+		QuadEdge::Ptr q = *it;
+		Vector2dPtr org = q->edges[0]->org();
+		Vector2dPtr dst = q->edges[0]->dest();
+		pts0[i] = Vector3f((float)org->x(), (float) org->y(), 0.f);
+		pts1[i] = Vector3f((float)dst->x(), (float) dst->y(), 0.f);
+	}
+	util::drawLines(pts0, pts1, Vector3f(1.f,0.f,0.f), 1, s.env);
+	s.run();
+
+
 }
 
 /** Plots the delaunay triangulation of a random set of points. */
@@ -134,21 +162,43 @@ void testBox(const int N=10) {
 }
 
 void newTest(int fidx=0) {
-	string files[] = {"4.node",
-				"box.node",
-				"flag.node",
-				"ladder.node",
-				"tri.node",
-				"633.node",
-				"dots.node",
-				"grid.node",
-				"spiral.node",
-				"ttimeu1000000.node"};
+	string files[] = {
+			"dots2.node",
+			"4.node",
+			"box.node",
+			"flag.node",
+			"ladder.node",
+			"tri.node",
+			"633.node",
+			"333.node",
+			"dots.node",
+			"grid.node",
+			"spiral.node",
+			"ttimeu1000000.node"};
 
-		string fname = string(EXPAND (PROJECT_DATA_DIR)) + "/" +  files[fidx];
-		DelaunaySubdivision subD(fname);
-		subD.computeDelaunay();
-		subD.writeToFile();
+
+	string fname = string(EXPAND (PROJECT_DATA_DIR)) + "/" +  files[fidx];
+	DelaunaySubdivision subD(fname);
+	subD.computeDelaunay();
+	subD.writeToFile();
+
+
+	//	// DRAW SUBDIVISION
+	CustomScene s;
+	Eigen::Affine3f tf = Eigen::Affine3f::Identity();
+	util::drawAxes(tf, 0.5, s.env);
+	vector3f pts0(subD.qedges.size()), pts1(subD.qedges.size());
+	int i = 0;
+	for(boost::unordered_set<QuadEdge::Ptr>::iterator it = subD.qedges.begin();
+			it != subD.qedges.end(); it++, i++) {
+		QuadEdge::Ptr q = *it;
+		Vector2dPtr org = q->edges[0]->org();
+		Vector2dPtr dst = q->edges[0]->dest();
+		pts0[i] = Vector3f((float)org->x(), (float) org->y(), 0.f);
+		pts1[i] = Vector3f((float)dst->x(), (float) dst->y(), 0.f);
+	}
+	util::drawLines(pts0, pts1, Vector3f(1.f,0.f,0.f), 1, s.env);
+	s.run();
 }
 
 
@@ -157,9 +207,9 @@ int main (int argc, char* argv[]) {
 	if (argc ==2) {
 		N = atoi(argv[1]);
 	}
-	//testRand(N);
+	testRand(N);
 	//testNODEFile(N);
 	//testBox();
-	newTest(N);
+	//newTest(N);
 	return 0;
 }
